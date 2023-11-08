@@ -1,0 +1,4 @@
+node_modules
+# ENV File
+/Configs/config.env
+/public/upload/images

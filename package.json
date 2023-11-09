@@ -14,6 +14,7 @@
     "@types/node": "^20.9.0",
     "dotenv": "^16.3.1",
     "express": "^4.18.2",
+    "joi": "^17.11.0",
     "mongoose": "^8.0.0"
   },
   "devDependencies": {

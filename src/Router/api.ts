@@ -1,7 +1,7 @@
-import express, { Router } from 'express';
+import express from "express";
+import { UserController } from '../Controllers/UserController'
 
-const app = express();
-const router = Router();
+//initiating the router
+export const router = express.Router();
 
-
-router.get('/',indexController.index)
+router.post('/store',UserController.store);

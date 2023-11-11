@@ -28,9 +28,5 @@ import { Request, Response } from "express";
     }
 }
 
-const userRepository = new UserRepository();
 
-const userService = new UserService(userRepository);
-
-const userController = new UserController(userService);
-export {UserController,userRepository,userService,userController};
+export {UserController};

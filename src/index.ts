@@ -1,7 +1,7 @@
 import express from 'express';
 import { config } from './configs/config';
 const connectDB = require("./configs/database");
-import {router }  from "./Router/api";
+import {router} from "./Router/api";
 const app = express();
 app.use(express.json())
 app.use(express.urlencoded({extended: true}))

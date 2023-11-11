@@ -1,14 +1,15 @@
-import { User } from '../Models/User';
 
-class UserService {
-    async create(data: any) {
-        try {
-            const user = await User.create(data);
-            return user;
-        } catch (error) {
-            console.log(error)
-        }
-    }
-}
+import { User,IUsers } from '../Models/User';
+import {UserRepository} from '../Repositories/UserRepository';
+ export  class UserService {
 
-export const userService = new UserService()
+  private userRepository: UserRepository;
+
+  constructor(userRepository: UserRepository) {
+    this.userRepository = userRepository;
+  }
+
+ async createUser(data: any): Promise<any> {
+    return await this.userRepository.create(data);
+  }
+ }

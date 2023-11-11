@@ -1,22 +1,36 @@
-import { userService } from "../Services/UserService";
+import { UserService } from '../Services/UserService';
 import { userValidate } from "../Validations/UserValidate";
 import { Request, Response } from "express";
+ class UserController {
+    private userService: UserService;
 
-class userController {
-    store = async (req: Request, res: Response) => {
+    constructor(userService: UserService) {
+      this.userService = userService;
+    }
+
+      store = async (req: Request, res: Response)=> {
+       
         const data = {
             name: req.body.name,
             email: req.body.email,
             password: req.body.password
         }
-
         const { error } = userValidate.validate(req.body);
+       
         if (error) {
             res.status(400).json(error.message)
+       
         } else {
-            const user = await userService.create(data);
-            res.status(201).json(user);
+            const newUser = await this.userService.createUser(data);
+            res.json(newUser);
+          
         }
     }
 }
-export const UserController = new userController()
+
+const userRepository = new UserRepository();
+
+const userService = new UserService(userRepository);
+
+const userController = new UserController(userService);
+export {UserController,userRepository,userService,userController};

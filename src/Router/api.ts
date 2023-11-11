@@ -1,7 +1,15 @@
 import express from "express";
-import { UserController } from '../Controllers/UserController'
+import { UserRepository } from '../Repositories/UserRepository';
+import { UserService } from '../Services/UserService';
+import { UserController } from '../Controllers/UserController';
 
 //initiating the router
 export const router = express.Router();
 
-router.post('/store',UserController.store);
+const userRepository = new UserRepository();
+
+const userService = new UserService(userRepository);
+
+const userController = new UserController(userService);
+
+router.post('/store', userController.store.bind(UserController)); 

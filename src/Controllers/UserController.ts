@@ -1,7 +1,8 @@
 import { UserService } from '../Services/UserService';
 import { userValidate } from "../Validations/UserValidate";
+import {UserRepository} from "../Repositories/UserRepository";
 import { Request, Response } from "express";
- class UserController {
+ class userController {
     private userService: UserService;
 
     constructor(userService: UserService) {
@@ -27,6 +28,10 @@ import { Request, Response } from "express";
         }
     }
 }
+const userRepository = new UserRepository();
 
+const userService = new UserService(userRepository);
 
-export {UserController};
+const UserController = new userController(userService);
+
+export { userRepository, userService, UserController };

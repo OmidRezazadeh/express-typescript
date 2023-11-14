@@ -1,32 +1,31 @@
 import { UserService } from '../Services/UserService';
-import { userValidate } from "../Validations/UserValidate";
-import {UserRepository} from "../Repositories/UserRepository";
-import { Request, Response } from "express";
- class userController {
-    private userService: UserService;
 
-    constructor(userService: UserService) {
-      this.userService = userService;
+import { UserRepository } from "../Repositories/UserRepository";
+import { Request, Response,NextFunction } from "express";
+import bcrypt from "bcrypt";
+
+class userController {
+  private userService: UserService;
+
+  constructor(userService: UserService) {
+    this.userService = userService;
+  }
+
+  register = async (req: Request, res: Response,next: NextFunction) => {
+
+try{
+     await this.userService.validation(req.body);
+  }catch(err){
+    next(err);
+  }
+  }
+  login = async (req: Request, res: Response) => {
+    const data={
+      email: req.body.email,
+      password: req.body.password
     }
 
-      store = async (req: Request, res: Response)=> {
-       
-        const data = {
-            name: req.body.name,
-            email: req.body.email,
-            password: req.body.password
-        }
-        const { error } = userValidate.validate(req.body);
-       
-        if (error) {
-            res.status(400).json(error.message)
-       
-        } else {
-            const newUser = await this.userService.createUser(data);
-            res.json(newUser);
-          
-        }
-    }
+  }
 }
 const userRepository = new UserRepository();
 

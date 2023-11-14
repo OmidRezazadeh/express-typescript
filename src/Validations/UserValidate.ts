@@ -15,6 +15,8 @@ const passwordValidation = Joi.string().min(4).max(255).required()
         'any.required': 'رمز عبور اجباری است',
     });
 
+
+
 export const userValidate = Joi.object({
     name: Joi.string().required().min(4).max(255)
         .messages({

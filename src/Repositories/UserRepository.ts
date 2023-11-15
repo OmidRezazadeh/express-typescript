@@ -5,10 +5,13 @@ import { UserInterface } from "../interface/UserInterFace";
 
 export class UserRepository implements UserInterface {
 
-  async create(data: IUsers) {
-
-    const user = await User.create(data);
-    return user;
+  async create(data:any)  {
+    try {
+      const user = await User.create(data);
+      return user;
+    } catch (error) {
+      throw new Error(`Error creating user in the repository: ${error.message}`);
+    }
 
   }
 

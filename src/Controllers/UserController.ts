@@ -1,8 +1,8 @@
+import { Request, Response, NextFunction } from "express";
+import { UserRepository } from "../Repositories/UserRepository";
 import { UserService } from '../Services/UserService';
 
-import { UserRepository } from "../Repositories/UserRepository";
-import { Request, Response,NextFunction } from "express";
-import bcrypt from "bcrypt";
+
 
 class userController {
   private userService: UserService;
@@ -11,16 +11,20 @@ class userController {
     this.userService = userService;
   }
 
-  register = async (req: Request, res: Response,next: NextFunction) => {
+  register = async (req: Request, res: Response, next: NextFunction) => {
 
-try{
-     await this.userService.validation(req.body);
-  }catch(err){
-    next(err);
-  }
+    try {
+      const data = req.body;
+      await this.userService.validation(data);
+      const user = await this.userService.create(data);
+      console.log(user);
+      res.status(201).json(user);
+    } catch (err) {
+      next(err);
+    }
   }
   login = async (req: Request, res: Response) => {
-    const data={
+    const data = {
       email: req.body.email,
       password: req.body.password
     }

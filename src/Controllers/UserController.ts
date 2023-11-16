@@ -23,10 +23,16 @@ class userController {
       next(err);
     }
   }
-  login = async (req: Request, res: Response) => {
+  login = async (req: Request, res: Response, next: NextFunction) => {
+    try {
+      const data = { email: req.body.email, password: req.body.password };
+      await this.userService.validationLogin(data);
+     const token = await this.userService.auth(data); 
+     res.status(200).json({"token":token});
+    } catch (err) {
+      next(err);
+    }
 
-    const data = {email:req.body.email, password: req.body.password};
-    await this.userService.validationLogin(data);
   }
 }
 const userRepository = new UserRepository();

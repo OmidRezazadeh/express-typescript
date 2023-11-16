@@ -2,8 +2,10 @@
 import { User, IUsers } from '../Models/User';
 import { UserRepository } from '../Repositories/UserRepository';
 import { userValidate, validationLogin } from "../Validations/UserValidate";
-import { config } from '../configs/config';
+
 import bcrypt from "bcrypt";
+import jwt from 'jsonwebtoken';
+import { config } from '../configs/config';
 export class UserService {
 
   private userRepository: UserRepository;
@@ -40,6 +42,7 @@ export class UserService {
 
   }
   async validationLogin(data: any) {
+
     const { error } = validationLogin.validate(data);
     if (error) {
       const errors = new Error(error.details[0].message);
@@ -47,7 +50,7 @@ export class UserService {
       throw errors;
     }
 
-    
+
 
     let email = data.email;
     const userExists = await this.userRepository.findByEmail(email);
@@ -56,8 +59,21 @@ export class UserService {
       (errorEmail as any).status = 400;
       throw errorEmail;
     }
-    
-    
+  }
 
+  async auth(data: any) {
+    const user = await this.userRepository.findByEmail(data.email);
+    if (await bcrypt.compare(data.password, user.password)) {
+      const token = jwt.sign({ user: { email: user.email, name: user.name }, }, config.JWT_SECRET, { expiresIn: "2h", });
+
+      // // Step 5: Respond with the token and user ID
+      return (token);
+    } else {
+      const error = new Error('کاربری بااین ایمیل یافت نشد');
+      (error as any).status = 400;
+      throw error;
+
+    }
   }
 }
+

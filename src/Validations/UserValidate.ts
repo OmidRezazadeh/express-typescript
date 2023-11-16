@@ -36,7 +36,7 @@ export const userValidate = Joi.object({
 });
 
 
-export const login = Joi.object({
+export const validationLogin = Joi.object({
     email: emailValidate,
     password: passwordValidation,
 })

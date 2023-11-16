@@ -24,11 +24,9 @@ class userController {
     }
   }
   login = async (req: Request, res: Response) => {
-    const data = {
-      email: req.body.email,
-      password: req.body.password
-    }
 
+    const data = {email:req.body.email, password: req.body.password};
+    await this.userService.validationLogin(data);
   }
 }
 const userRepository = new UserRepository();

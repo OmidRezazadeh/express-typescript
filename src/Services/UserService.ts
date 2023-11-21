@@ -85,4 +85,14 @@ export class UserService {
       throw error;
     }
   }
+async validationForgotPassword(data:any){
+  const user = await this.userRepository.findByEmail(data.email);
+  if(!user){
+    const error = new Error('کاربری بااین ایمیل یافت نشد');
+    (error as any).status = 400;
+    throw error;
+  }
+
+}
+
 }

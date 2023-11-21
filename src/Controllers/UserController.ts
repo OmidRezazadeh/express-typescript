@@ -40,6 +40,14 @@ class userController {
       next(err); // Passing any errors to the error handling middleware
     }
   }
+
+  forgotPassword =async (req:Request, res:Response) => {
+    await this.userService.validationForgotPassword(req.body);
+
+
+
+  }
+  
 }
 
 // Creating instances of UserRepository and UserService

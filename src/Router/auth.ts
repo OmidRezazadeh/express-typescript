@@ -7,3 +7,4 @@ export const router = express.Router();
 
 router.post('/register',UserController.register.bind(UserController)); 
 router.post("/login",loginLimiter,UserController.login.bind(UserController));
+router.post("/forgot-password",UserController.forgotPassword.bind(UserController))

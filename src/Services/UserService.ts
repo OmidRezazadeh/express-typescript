@@ -1,5 +1,5 @@
 import { UserRepository } from '../Repositories/UserRepository';
-import { userValidate, validationLogin } from "../Validations/UserValidate";
+import { userValidate, validationLogin, validationConfirmationCode } from "../Validations/UserValidate";
 
 import bcrypt from "bcrypt";
 import jwt from 'jsonwebtoken';
@@ -14,7 +14,7 @@ export class UserService {
   constructor(userRepository: UserRepository) {
     this.userRepository = userRepository;
   }
-  
+
   // Method to create a new user
   async create(data: any) {
     try {
@@ -85,14 +85,7 @@ export class UserService {
       throw error;
     }
   }
-async validationForgotPassword(data:any){
-  const user = await this.userRepository.findByEmail(data.email);
-  if(!user){
-    const error = new Error('کاربری بااین ایمیل یافت نشد');
-    (error as any).status = 400;
-    throw error;
-  }
 
-}
+
 
 }

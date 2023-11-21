@@ -40,3 +40,7 @@ export const validationLogin = Joi.object({
     email: emailValidate,
     password: passwordValidation,
 })
+
+export const validationConfirmationCode= Joi.object({
+    email: emailValidate,
+})

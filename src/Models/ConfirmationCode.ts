@@ -1,4 +1,4 @@
-import mongoose, { Schema, model } from "mongoose";
+import mongoose, { Schema } from "mongoose";
 
 // Define the structure of the confirmation code
 export interface IConfirmationCode {
@@ -11,7 +11,7 @@ export interface IConfirmationCode {
 const ConfirmationCodeSchema = new Schema<IConfirmationCode>({
     code: { type: String, required: true }, // Confirmation code field
     email: { type: String, required: true }, // Email field
-    createdAt: { type: Date, default: Date.now, expires: `180` } // Creation date with expiration set to 1 hour
+    createdAt: { type: Date, default: Date.now, expires:`180`} // Creation date with expiration set to 180 mins
 });
 
 // Create the ConfirmationCode model based on the schema

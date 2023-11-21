@@ -33,21 +33,16 @@ class userController {
       // Validating login data before attempting authentication
       await this.userService.validationLogin(data);
       // Authenticating user and generating a token upon successful login
-      const token = await this.userService.auth(data); 
+      const token = await this.userService.auth(data);
       // Sending the generated token in the response
-      res.status(200).json({"token": token});
+      res.status(200).json({ "token": token });
     } catch (err) {
       next(err); // Passing any errors to the error handling middleware
     }
   }
 
-  forgotPassword =async (req:Request, res:Response) => {
-    await this.userService.validationForgotPassword(req.body);
 
 
-
-  }
-  
 }
 
 // Creating instances of UserRepository and UserService

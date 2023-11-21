@@ -1,7 +1,7 @@
 import express from 'express';
 import { config } from './configs/config';
 const connectDB = require("./configs/database");
-import { router } from "./Router/api"; // Importing your API router
+import { router } from "./Router/auth"; // Importing your API router
 import { errorHandler } from "./Middlewares/errors"; // Importing error handling middleware
 
 const app = express();

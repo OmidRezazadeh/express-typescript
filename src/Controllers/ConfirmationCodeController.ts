@@ -11,9 +11,12 @@ class confirmationCodeController {
     }
     confirmationCode = async (req: Request, res: Response, next: NextFunction) => {
         try {
-         
-            await this.confirmationCodeService.validationConfirmationCode(req.body.email);
-            await this.confirmationCodeService.store(req.body.email);
+            const email = {
+                email: req.body.email, // This is just an example. Replace this with the actual email input.
+             };
+            console.log(email);
+            await this.confirmationCodeService.validationConfirmationCode(email);
+            await this.confirmationCodeService.store(email);
 
             res.status(200).json({ "message": "success" });
         } catch (err) {

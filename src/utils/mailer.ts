@@ -1,4 +1,3 @@
-const { info } = require('console');
 const nodemailer=require('nodemailer');
 const smtpTransport= require('nodemailer-smtp-transport');
 const transportData= smtpTransport({
@@ -13,7 +12,7 @@ const transportData= smtpTransport({
         }
 })
 
- exports.sendEmail=(email:string, subject, message)=>{
+ export const sendEmail=(email:string,code:string, message:string)=>{
     const transporter = nodemailer.createTransport(transportData);
     transporter.sendMail({
         from:"omid@gmail.com",

@@ -1,4 +1,4 @@
 node_modules
 # ENV File
-/Configs/config.ts
+.env
 /public/upload/images

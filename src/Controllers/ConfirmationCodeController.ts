@@ -18,6 +18,8 @@ class confirmationCodeController {
             await this.confirmationCodeService.validationConfirmationCode(email);
             await this.confirmationCodeService.store(email);
 
+
+
             res.status(200).json({ "message": "success" });
         } catch (err) {
             next(err);

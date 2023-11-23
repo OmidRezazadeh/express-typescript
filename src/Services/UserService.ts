@@ -1,10 +1,8 @@
 import { UserRepository } from '../Repositories/UserRepository';
-import { userValidate, validationLogin, validationConfirmationCode } from "../Validations/UserValidate";
+import { userValidate, validationLogin } from "../Validations/UserValidate";
 
 import bcrypt from "bcrypt";
 import jwt from 'jsonwebtoken';
-import { config } from '../configs/config';
-
 // Service handling user-related operations
 export class UserService {
 
@@ -77,7 +75,7 @@ export class UserService {
     // Comparing the provided password with the stored hashed password
     if (await bcrypt.compare(data.password, user.password)) {
       // Generating a JWT token upon successful authentication
-      const token = jwt.sign({ user: { email: user.email, name: user.name } }, config.JWT_SECRET, { expiresIn: "2h" });
+      const token = jwt.sign({ user: { email: user.email, name: user.name } }, process.env.JWT_SECRET, { expiresIn: "2h" });
       return token;
     } else {
       const error = new Error('کاربری بااین ایمیل یافت نشد');

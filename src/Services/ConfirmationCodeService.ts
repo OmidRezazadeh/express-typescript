@@ -1,6 +1,7 @@
 import { ConfirmationCodeRepository } from "../Repositories/ConfirmationCodeRepository";
 import { UserRepository } from "../Repositories/UserRepository";
 import { validationConfirmationCode } from "../Validations/ConfirmationCodeValidate";
+import {sendEmail} from "../utils/mailer";
 import crypto from 'crypto';
 
 export class ConfirmationCodeService {
@@ -39,9 +40,10 @@ export class ConfirmationCodeService {
             const code = crypto.randomBytes(6).toString('hex');
             const email = data.email;
             const dataConfirmationCode = { code, email };
-            
+            const user = await this.userRepository.findByEmail(data.email);
             // Create a new confirmation code entry in the repository
             const newConfirmationCode = await this.confirmationCodeRepository.create(dataConfirmationCode);
+            // sendEmail(email, code, `پیام از طرف وبلاگ <br/> ایمیل کاربر : ${email}`);
             return newConfirmationCode; // Return the newly created confirmation code object
         } catch (err) {
             console.log(err); // Log any errors that occur during the process

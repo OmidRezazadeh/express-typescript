@@ -12,16 +12,16 @@ const transportData= smtpTransport({
         }
 })
 
- export const sendEmail=(email:string,code:string, message:string)=>{
+ export const sendEmail=(email:string,subject:string,code:string, name:string)=>{
     const transporter = nodemailer.createTransport(transportData);
     transporter.sendMail({
         from:"omid@gmail.com",
         to:email,
         subject:subject,
         html:`<h1>
-        سلام ${fullname}
+        سلام ${name}
         </h1>
-        <p>${message}</p>`
+        <p>${code}</p>`
 
     })
  }

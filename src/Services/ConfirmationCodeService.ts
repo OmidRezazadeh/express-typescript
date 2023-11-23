@@ -43,7 +43,7 @@ export class ConfirmationCodeService {
             const user = await this.userRepository.findByEmail(data.email);
             // Create a new confirmation code entry in the repository
             const newConfirmationCode = await this.confirmationCodeRepository.create(dataConfirmationCode);
-            // sendEmail(email, code, `پیام از طرف وبلاگ <br/> ایمیل کاربر : ${email}`);
+            sendEmail(email,"پیام از طرف وبلاگ",code,user.name);
             return newConfirmationCode; // Return the newly created confirmation code object
         } catch (err) {
             console.log(err); // Log any errors that occur during the process

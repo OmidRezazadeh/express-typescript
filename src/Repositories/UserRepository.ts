@@ -1,4 +1,3 @@
-import { DefaultSchemaOptions, Document, FlatRecord, Model, Schema, Types } from "mongoose";
 import { IUsers, User } from "../Models/User";
 import { UserInterface } from "../interface/UserInterFace";
 
@@ -21,14 +20,25 @@ export class UserRepository implements UserInterface {
     console.log("ok"); // Placeholder - currently logs "ok" but doesn't perform login logic
   }
 
-  // Method to find a user by their email
-  async findByEmail(email: string): Promise<IUsers | null> {
+  async updatePassword(password: string, email: string): Promise <any>  {
     try {
       const user = await User.findOne({ email }); // Find a user in the database by their email
-      return user; // Return the found user or null if not found
-    } catch (error) {
-      console.log(error); // Log any errors that occur during the process
-      return null; // Return null in case of an error
+      user.password = password;
+      user.save();
+      return user;
+    } catch (err) {
+      console.log(err)
     }
   }
+
+  // Method to find a user by their email
+  async findByEmail(email: string): Promise < IUsers | null > {
+  try {
+    const user = await User.findOne({ email }); // Find a user in the database by their email
+    return user; // Return the found user or null if not found
+  } catch(error) {
+    console.log(error); // Log any errors that occur during the process
+    return null; // Return null in case of an error
+  }
+}
 }

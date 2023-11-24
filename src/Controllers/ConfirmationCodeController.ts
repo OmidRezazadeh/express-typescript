@@ -6,25 +6,26 @@ class confirmationCodeController {
     private confirmationCodeService: ConfirmationCodeService;
 
     // Constructor to initialize the UserService
-    constructor(userService: ConfirmationCodeService) {
-        this.confirmationCodeService = userService;
+    constructor(
+        confirmationCodeService: ConfirmationCodeService,
+        ) {
+        this.confirmationCodeService = confirmationCodeService;
     }
     confirmationCode = async (req: Request, res: Response, next: NextFunction) => {
         try {
             const email = {
                 email: req.body.email, // This is just an example. Replace this with the actual email input.
-             };
-            console.log(email);
-            await this.confirmationCodeService.validationConfirmationCode(email);
+            };
+        
+            await this.confirmationCodeService.validationConfirmationCodeByEmail(email);
             await this.confirmationCodeService.store(email);
-
-
-
             res.status(200).json({ "message": "success" });
         } catch (err) {
             next(err);
         }
     }
+
+ 
 }
 const confirmationCodeRepository = new ConfirmationCodeRepository();
 const userRepository = new UserRepository();

@@ -1,7 +1,8 @@
+import { string } from "joi";
 import { ConfirmationCodeRepository } from "../Repositories/ConfirmationCodeRepository";
 import { UserRepository } from "../Repositories/UserRepository";
 import { validationConfirmationCode } from "../Validations/ConfirmationCodeValidate";
-import {sendEmail} from "../utils/mailer";
+import { sendEmail } from "../utils/mailer";
 import crypto from 'crypto';
 
 export class ConfirmationCodeService {
@@ -14,7 +15,7 @@ export class ConfirmationCodeService {
     }
 
     // Method to validate confirmation code
-    async validationConfirmationCode(data: any) {
+    async validationConfirmationCodeByEmail(data: any) {
         // Validate the data using Joi schema
         const { error } = validationConfirmationCode.validate(data);
         if (error) {
@@ -43,10 +44,22 @@ export class ConfirmationCodeService {
             const user = await this.userRepository.findByEmail(data.email);
             // Create a new confirmation code entry in the repository
             const newConfirmationCode = await this.confirmationCodeRepository.create(dataConfirmationCode);
-            sendEmail(email,"پیام از طرف وبلاگ",code,user.name);
+            // sendEmail(email, "پیام از طرف وبلاگ", code, user.name);
             return newConfirmationCode; // Return the newly created confirmation code object
         } catch (err) {
             console.log(err); // Log any errors that occur during the process
         }
     }
+
+
+    async validationConfirmationCode(code: string, email: string) {
+        const confirmationCode = await this.confirmationCodeRepository.find(code, email)
+        if (!confirmationCode) {
+            const errorConfirmationCode = new Error("کد وارد شده صحیح نیست"); // confirmationCode with this email not found
+            (errorConfirmationCode as any).status = 400;
+            throw errorConfirmationCode;
+        }
+    }
+
+  
 }

@@ -14,4 +14,15 @@ export class ConfirmationCodeRepository implements ConfirmationCodeInterface {
             throw new Error(`Error creating confirmation code in the repository: ${error.message}`);
         }
     }
+
+    async find(code: string, email: string) {
+        try {
+            const newConfirmationCode = await ConfirmationCode.findOne({ code: code, email: email });
+            // Find a ConfirmationCode in the database by their email,code
+            return newConfirmationCode; // Return the found ConfirmationCode or null if not found
+        } catch (error) {
+            console.log(error); // Log any errors that occur during the process
+
+        }
+    }
 }

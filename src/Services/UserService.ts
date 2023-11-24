@@ -83,7 +83,19 @@ export class UserService {
       throw error;
     }
   }
+  async updatePassword(password:string,email:string){
+
+    const user = await this.userRepository.findByEmail(email);
+    if(!user){
+      const error = new Error('کاربری بااین ایمیل یافت نشد');
+      (error as any).status = 400;
+      throw error;
+    }
+      const passwordHash = await bcrypt.hash(password, 10);
+      await this.userRepository.updatePassword(passwordHash,email);
+       
 
 
+  }
 
 }

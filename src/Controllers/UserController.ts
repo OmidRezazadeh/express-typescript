@@ -1,14 +1,21 @@
 import { Request, Response, NextFunction } from "express";
 import { UserRepository } from "../Repositories/UserRepository";
 import { UserService } from '../Services/UserService';
-
+import { ConfirmationCodeService } from "../Services/ConfirmationCodeService";
+import { ConfirmationCodeRepository } from "../Repositories/ConfirmationCodeRepository";
 // Controller handling user-related operations
 class userController {
   private userService: UserService;
+  private confirmationCodeService: ConfirmationCodeService;
+
 
   // Constructor to initialize the UserService
-  constructor(userService: UserService) {
+  constructor(
+    userService: UserService,
+    confirmationCodeService: ConfirmationCodeService,
+  ) {
     this.userService = userService;
+    this.confirmationCodeService = confirmationCodeService;
   }
 
   // Method to handle user registration
@@ -18,7 +25,7 @@ class userController {
       // Validating user data before creating a new user
       await this.userService.validation(data);
       const user = await this.userService.create(data);
-      console.log(user);
+
       // Sending a successful response with the created user data
       res.status(201).json(user);
     } catch (err) {
@@ -40,6 +47,17 @@ class userController {
       next(err); // Passing any errors to the error handling middleware
     }
   }
+  updatePassword = async (req: Request, res: Response, next: NextFunction) => {
+    try {
+      const email = req.body.email;
+      await this.confirmationCodeService.validationConfirmationCode(req.body.code, email);
+      await this.userService.updatePassword(req.body.password, email);
+      res.status(200).json({ "message": "success" });
+
+    } catch (err) {
+      next(err);
+    }
+  }
 
 
 
@@ -47,9 +65,10 @@ class userController {
 
 // Creating instances of UserRepository and UserService
 const userRepository = new UserRepository();
+const confirmationCodeRepository = new ConfirmationCodeRepository();
 const userService = new UserService(userRepository);
-
+const confirmationCodeService = new ConfirmationCodeService(userRepository, confirmationCodeRepository);
 // Creating an instance of the UserController and exporting it
-const UserController = new userController(userService);
+const UserController = new userController(userService, confirmationCodeService);
 
 export { userRepository, userService, UserController };

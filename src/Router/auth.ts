@@ -8,4 +8,5 @@ export const router = express.Router();
 
 router.post('/register',UserController.register.bind(UserController)); 
 router.post("/login",loginLimiter,UserController.login.bind(UserController));
-router.post("/confirmation-code",ConfirmationCodeController.confirmationCode.bind(UserController));
+router.post("/confirmation-code",ConfirmationCodeController.confirmationCode.bind(ConfirmationCodeController));
+router.put("/update-password",UserController.updatePassword.bind(UserController));

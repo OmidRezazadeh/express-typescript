@@ -3,6 +3,7 @@ import { UserRepository } from "../Repositories/UserRepository";
 import { UserService } from '../Services/UserService';
 import { ConfirmationCodeService } from "../Services/ConfirmationCodeService";
 import { ConfirmationCodeRepository } from "../Repositories/ConfirmationCodeRepository";
+
 // Controller handling user-related operations
 class userController {
   private userService: UserService;
@@ -47,14 +48,16 @@ class userController {
       next(err); // Passing any errors to the error handling middleware
     }
   }
-  updatePassword = async (req: Request, res: Response, next: NextFunction) => {
+    updatePassword = async (req: Request, res: Response, next: NextFunction) => {
     try {
       const email = req.body.email;
       await this.confirmationCodeService.validationConfirmationCode(req.body.code, email);
-      await this.userService.updatePassword(req.body.password, email);
+      const data={ email, password:req.body.password};
+      await this.userService.updatePassword(data);
       res.status(200).json({ "message": "success" });
 
     } catch (err) {
+      console.log(err);
       next(err);
     }
   }

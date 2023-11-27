@@ -22,7 +22,7 @@ export class UserRepository implements UserInterface {
 
   async updatePassword(password: string, email: string): Promise <any>  {
     try {
-      const user = await User.findOne({ email }); // Find a user in the database by their email
+      const user = await User.findOne({email}); // Find a user in the database by their email
       user.password = password;
       user.save();
       return user;

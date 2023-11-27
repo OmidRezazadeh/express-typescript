@@ -11,7 +11,7 @@ export interface IConfirmationCode {
 const ConfirmationCodeSchema = new Schema<IConfirmationCode>({
     code: { type: String, required: true }, // Confirmation code field
     email: { type: String, required: true }, // Email field
-    createdAt: { type: Date, default: Date.now, expires:`180`} // Creation date with expiration set to 180 mins
+    createdAt: { type: Date, default: Date.now, expires:3600} // Creation date with expiration set to 180 mins
 });
 
 // Create the ConfirmationCode model based on the schema

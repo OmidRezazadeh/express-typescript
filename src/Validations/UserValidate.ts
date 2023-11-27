@@ -45,3 +45,8 @@ export const validationLogin = Joi.object({
 export const validationConfirmationCode = Joi.object({
     email: emailValidate, // Apply email validation schema
 });
+
+export const validationUpdatePassword=Joi.object({
+    email: emailValidate, // Apply email validation schema
+    password: passwordValidation, // Apply password validation schema,
+});

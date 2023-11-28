@@ -26,6 +26,12 @@ export const userValidate = Joi.object({
             'string.min': 'نام کامل باید حداقل ۴ کاراکتر باشد', // Custom error message for minimum length
             'string.max': 'نام کامل نمی‌تواند بیشتر از ۲۵۵ کاراکتر باشد', // Custom error message for maximum length
         }),
+    phone:Joi.string().length(10).pattern(/^[0-9]+$/).required().messages({
+        'string.base': 'شماره تلفن باید از نوع رشته باشد',
+        'string.length': 'شماره تلفن باید دقیقا 10 رقم باشد',
+        'string.pattern.base': 'شماره تلفن باید فقط شامل ارقام باشد',
+        'any.required': 'شماره تلفن یک قسمت ضروری است'
+    }), 
     email: emailValidate, // Apply email validation schema
     password: passwordValidation, // Apply password validation schema
     confirmPassword: Joi.string().valid(Joi.ref('password')).required().label('confirmPassword')

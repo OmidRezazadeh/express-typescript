@@ -15,9 +15,7 @@ export class UploadService {
                     }
                 } else {
                     if (!req.file || !req.file.fieldname ) {
-                        const errorFile = new Error("جهت آپلود باید عکسی انتخاب کنید");
-                        (errorFile as any).status = 404;
-                        throw errorFile;
+                        return res.status(400).json({ message:"لطفا عکس را  اپلود کنید"});
                     }
                 }
                 
@@ -32,7 +30,6 @@ export class UploadService {
             res.status(200).json({ image });
             });
         } catch (error) {
-
             next(error)
         }
     }

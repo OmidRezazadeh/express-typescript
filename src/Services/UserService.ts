@@ -27,7 +27,7 @@ export class UserService {
     } catch (error) {
       throw new Error(`Error creating user: ${error.message}`);
     }
-  }
+  } 
 
   // Method to validate user data (e.g., during registration)
   async validation(data: any): Promise<any> {

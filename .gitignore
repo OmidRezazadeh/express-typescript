@@ -1,4 +1,4 @@
 node_modules
 # ENV File
 .env
-/public/upload/images
+src/Public/upload/images

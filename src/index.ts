@@ -1,6 +1,7 @@
 import express from 'express';
 const connectDB = require("./configs/database");
 import { router } from "./Router/auth"; // Importing your API router
+import {uploadRouter} from "./Router/file";
 import { errorHandler } from "./Middlewares/errors"; // Importing error handling middleware
 import dotenv from 'dotenv';
 const app = express();
@@ -13,6 +14,7 @@ connectDB();
 
 // Using the defined router for '/api/v1/users' endpoints
 app.use('/api/v1/users', router);
+app.use("/api/v1/upload",uploadRouter);
 
 // Implementing the error handling middleware for any errors in the application
 app.use(errorHandler);

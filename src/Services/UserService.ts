@@ -1,33 +1,48 @@
 import { UserRepository } from '../Repositories/UserRepository';
-import { userValidate, validationLogin,validationUpdatePassword } from "../Validations/UserValidate";
-
+import { UserInformationRepository } from '../Repositories/UserInformationRepository';
+import { userValidate, validationLogin, validationUpdatePassword } from "../Validations/UserValidate";
+import mongoose from "mongoose";
 import bcrypt from 'bcrypt';
 import jwt from 'jsonwebtoken';
 // Service handling user-related operations
 export class UserService {
 
   private userRepository: UserRepository;
+  private userInformationRepository: UserInformationRepository;
 
   // Constructor to initialize the UserRepository
-  constructor(userRepository: UserRepository) {
+  constructor(
+    userInformationRepository: UserInformationRepository,
+    userRepository: UserRepository
+  ) {
     this.userRepository = userRepository;
+    this.userInformationRepository = userInformationRepository;
   }
 
   // Method to create a new user
   async create(data: any) {
+    const session = await mongoose.startSession();
+    session.startTransaction();
+
     try {
-      
+
       // Hashing the password before storing it
       const password = await bcrypt.hash(data.password, 10);
 
       const userData = { name: data.name, email: data.email, password: password };
       // Creating a new user and returning the result
       const newUser = await this.userRepository.create(userData);
+      const userInformationData = { user: newUser._id, phone: data.phone };
+      const newUserInformation = await this.userInformationRepository.create(userInformationData)
+      await session.commitTransaction();
+      session.endSession();
       return newUser;
     } catch (error) {
+      await session.abortTransaction();
+      session.endSession();
       throw new Error(`Error creating user: ${error.message}`);
     }
-  } 
+  }
 
   // Method to validate user data (e.g., during registration)
   async validation(data: any): Promise<any> {
@@ -85,11 +100,11 @@ export class UserService {
       throw error;
     }
   }
-  async updatePassword(data:any){
+  async updatePassword(data: any) {
 
 
     const user = await this.userRepository.findByEmail(data.email);
-    if(!user){
+    if (!user) {
       const errorUser = new Error('کاربری بااین ایمیل یافت نشد');
       (errorUser as any).status = 400;
       throw errorUser;
@@ -101,8 +116,8 @@ export class UserService {
       (errors as any).status = 400;
       throw errors;
     }
-      const passwordHash = await bcrypt.hash(data.password,10);
-      await this.userRepository.updatePassword(passwordHash,data.email); 
+    const passwordHash = await bcrypt.hash(data.password, 10);
+    await this.userRepository.updatePassword(passwordHash, data.email);
   }
 
 }

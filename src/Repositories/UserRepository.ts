@@ -7,6 +7,7 @@ export class UserRepository implements UserInterface {
   // Method to create a new user
   async create(data: any) {
     try {
+      
       const user = await User.create(data); // Create a new user using the User model
       return user; // Return the created user object
     } catch (error) {

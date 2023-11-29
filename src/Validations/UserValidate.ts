@@ -18,6 +18,7 @@ const passwordValidation = Joi.string().min(4).max(255).required()
         'any.required': 'رمز عبور اجباری است', // Custom error message for required field
     });
 
+
 // Joi schema for user data validation
 export const userValidate = Joi.object({
     name: Joi.string().required().min(4).max(255)
@@ -31,7 +32,7 @@ export const userValidate = Joi.object({
         'string.length': 'شماره تلفن باید دقیقا 10 رقم باشد',
         'string.pattern.base': 'شماره تلفن باید فقط شامل ارقام باشد',
         'any.required': 'شماره تلفن یک قسمت ضروری است'
-    }), 
+    }),
     email: emailValidate, // Apply email validation schema
     password: passwordValidation, // Apply password validation schema
     confirmPassword: Joi.string().valid(Joi.ref('password')).required().label('confirmPassword')
@@ -40,6 +41,9 @@ export const userValidate = Joi.object({
             'any.required': 'تأیید رمز عبور اجباری است', // Custom error message for required field
         })
 });
+
+
+
 
 // Joi schema for login data validation
 export const validationLogin = Joi.object({

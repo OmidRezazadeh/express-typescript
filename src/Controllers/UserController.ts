@@ -1,8 +1,9 @@
 import { Request, Response, NextFunction } from "express";
-import { UserRepository } from "../Repositories/UserRepository";
+import { UserRepository} from "../Repositories/UserRepository";
 import { UserService } from '../Services/UserService';
 import { ConfirmationCodeService } from "../Services/ConfirmationCodeService";
 import { ConfirmationCodeRepository } from "../Repositories/ConfirmationCodeRepository";
+import { UserInformationRepository } from "../Repositories/UserInformationRepository";
 
 // Controller handling user-related operations
 class userController {
@@ -25,7 +26,7 @@ class userController {
       const data = req.body;
       // Validating user data before creating a new user
       await this.userService.validation(data);
-      const user = await this.userService.create(data);
+      const user = await this.userService.create(data); 
 
       // Sending a successful response with the created user data
       res.status(201).json(user);
@@ -68,8 +69,9 @@ class userController {
 
 // Creating instances of UserRepository and UserService
 const userRepository = new UserRepository();
+const userInformationRepository =new UserInformationRepository();
 const confirmationCodeRepository = new ConfirmationCodeRepository();
-const userService = new UserService(userRepository);
+const userService = new UserService(userInformationRepository,userRepository);
 const confirmationCodeService = new ConfirmationCodeService(userRepository, confirmationCodeRepository);
 // Creating an instance of the UserController and exporting it
 const UserController = new userController(userService, confirmationCodeService);

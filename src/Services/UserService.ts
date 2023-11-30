@@ -1,68 +1,83 @@
 import { UserRepository } from '../Repositories/UserRepository';
 import { UserInformationRepository } from '../Repositories/UserInformationRepository';
 import { userValidate, validationLogin, validationUpdatePassword } from "../Validations/UserValidate";
-import mongoose from "mongoose";
+import { tempImage, mimeTypeArray } from '../configs/config';
+
 import bcrypt from 'bcrypt';
 import jwt from 'jsonwebtoken';
+import path from 'path';
+import fs from 'fs';
 // Service handling user-related operations
 export class UserService {
 
   private userRepository: UserRepository;
-  private userInformationRepository: UserInformationRepository;
 
   // Constructor to initialize the UserRepository
   constructor(
-    userInformationRepository: UserInformationRepository,
     userRepository: UserRepository
   ) {
     this.userRepository = userRepository;
-    this.userInformationRepository = userInformationRepository;
   }
 
   // Method to create a new user
   async create(data: any) {
-    const session = await mongoose.startSession();
-    session.startTransaction();
-
     try {
-
       // Hashing the password before storing it
       const password = await bcrypt.hash(data.password, 10);
-
       const userData = { name: data.name, email: data.email, password: password };
       // Creating a new user and returning the result
-      const newUser = await this.userRepository.create(userData);
-      const userInformationData = { user: newUser._id, phone: data.phone };
-      const newUserInformation = await this.userInformationRepository.create(userInformationData)
-      await session.commitTransaction();
-      session.endSession();
+       const newUser = await this.userRepository.create(userData);  
+       console.log(newUser);   
       return newUser;
     } catch (error) {
-      await session.abortTransaction();
-      session.endSession();
+      console.log(error);
       throw new Error(`Error creating user: ${error.message}`);
+    
     }
   }
 
   // Method to validate user data (e.g., during registration)
   async validation(data: any): Promise<any> {
-    let email = data.email;
-    const userExists = await this.userRepository.findByEmail(email);
 
-    // Checking if the email already exists in the database
-    if (userExists) {
-      const errorEmail = new Error('این ایمیل قبلا استفاده شده');
-      (errorEmail as any).status = 400;
-      throw errorEmail;
-    }
+    // let email = data.email;
+    // const userExists = await this.userRepository.findByEmail(email);
 
-    // Validating user data using a predefined schema
-    const { error } = userValidate.validate(data);
-    if (error) {
-      const errors = new Error(error.details[0].message);
-      (errors as any).status = 400;
-      throw errors;
+
+    // // Checking if the email already exists in the database
+    // if (userExists) {
+    //   const errorEmail = new Error('این ایمیل قبلا استفاده شده');
+    //   (errorEmail as any).status = 400;
+    //   throw errorEmail;
+    // }
+
+    // // Validating user data using a predefined schema
+    // const { error } = userValidate.validate(data);
+    // if (error) {
+    //   const errors = new Error(error.details[0].message);
+    //   (errors as any).status = 400;
+    //   throw errors;
+    // }
+
+    if (data.image) { // Checking if image data is provided
+
+      const filePath = tempImage + data.image; // Creating the file path using the provided image data
+    
+      const fileExtension = path.extname(filePath).toLowerCase(); // Extracting the file extension and converting it to lowercase
+      if (!mimeTypeArray.includes(fileExtension)) { // Checking if the file extension is not in the allowed mime types
+        // If the file extension is invalid, throwing an error indicating an invalid image extension
+        const errorMimeTypeArray = new Error("پسوند عکس معتبر نیست ");
+        (errorMimeTypeArray as any).status = 400; // Setting a status code for the error (assuming it's for HTTP status)
+        throw errorMimeTypeArray; // Throwing the error to handle it elsewhere
+      }
+      if (!fs.existsSync(filePath)) { // Checking if the file doesn't exist in the specified path
+        // If the file doesn't exist, throwing an error indicating that the image file wasn't found
+        const errorExists = new Error("عکس مورد نظر یافت نشد");
+        (errorExists as any).status = 400; // Setting a status code for the error (assuming it's for HTTP status)
+        throw errorExists; // Throwing the error to handle it elsewhere
+      }
     }
+    
+
   }
 
   // Method to validate user login credentials

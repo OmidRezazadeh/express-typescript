@@ -1,37 +1,50 @@
 import { Request, Response, NextFunction } from "express";
-import { UserRepository} from "../Repositories/UserRepository";
+import { UserRepository } from "../Repositories/UserRepository";
 import { UserService } from '../Services/UserService';
 import { ConfirmationCodeService } from "../Services/ConfirmationCodeService";
 import { ConfirmationCodeRepository } from "../Repositories/ConfirmationCodeRepository";
 import { UserInformationRepository } from "../Repositories/UserInformationRepository";
+import { UserInformationService } from "../Services/UserInformationService";
+import { date } from "joi";
+import mongoose from "mongoose";
 
 // Controller handling user-related operations
 class userController {
   private userService: UserService;
   private confirmationCodeService: ConfirmationCodeService;
+  private userInformationService: UserInformationService
 
 
   // Constructor to initialize the UserService
   constructor(
     userService: UserService,
     confirmationCodeService: ConfirmationCodeService,
+    userInformationService: UserInformationService
   ) {
     this.userService = userService;
     this.confirmationCodeService = confirmationCodeService;
+    this.userInformationService = userInformationService;
   }
 
   // Method to handle user registration
   register = async (req: Request, res: Response, next: NextFunction) => {
     try {
-      const data = req.body;
-      // Validating user data before creating a new user
-      await this.userService.validation(data);
-      const user = await this.userService.create(data); 
 
-      // Sending a successful response with the created user data
-      res.status(201).json(user);
+      const data = req.body;
+
+      // // Validating user data before creating a new user
+      await this.userService.validation(data);
+      const user = await this.userService.create(data);
+      const userInformation = await this.userInformationService.create(user._id, data)
+      //Sending a successful response with the created user data
+      res.status(201).json({
+        user,
+        userInformation
+      });
     } catch (err) {
-      next(err); // Passing any errors to the error handling middleware
+
+      next(err);
+      // Passing any errors to the error handling middleware
     }
   }
 
@@ -49,11 +62,11 @@ class userController {
       next(err); // Passing any errors to the error handling middleware
     }
   }
-    updatePassword = async (req: Request, res: Response, next: NextFunction) => {
+  updatePassword = async (req: Request, res: Response, next: NextFunction) => {
     try {
       const email = req.body.email;
       await this.confirmationCodeService.validationConfirmationCode(req.body.code, email);
-      const data={ email, password:req.body.password};
+      const data = { email, password: req.body.password };
       await this.userService.updatePassword(data);
       res.status(200).json({ "message": "success" });
 
@@ -69,11 +82,12 @@ class userController {
 
 // Creating instances of UserRepository and UserService
 const userRepository = new UserRepository();
-const userInformationRepository =new UserInformationRepository();
+const userInformationRepository = new UserInformationRepository();
 const confirmationCodeRepository = new ConfirmationCodeRepository();
-const userService = new UserService(userInformationRepository,userRepository);
+const userService = new UserService(userRepository);
+const userInformationService = new UserInformationService(userInformationRepository);
 const confirmationCodeService = new ConfirmationCodeService(userRepository, confirmationCodeRepository);
 // Creating an instance of the UserController and exporting it
-const UserController = new userController(userService, confirmationCodeService);
+const UserController = new userController(userService, confirmationCodeService, userInformationService);
 
 export { userRepository, userService, UserController };

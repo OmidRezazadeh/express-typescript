@@ -7,7 +7,7 @@ export class UserRepository implements UserInterface {
   // Method to create a new user
   async create(data: any) {
     try {
-      
+
       const user = await User.create(data); // Create a new user using the User model
       return user; // Return the created user object
     } catch (error) {
@@ -21,9 +21,9 @@ export class UserRepository implements UserInterface {
     console.log("ok"); // Placeholder - currently logs "ok" but doesn't perform login logic
   }
 
-  async updatePassword(password: string, email: string): Promise <any>  {
+  async updatePassword(password: string, email: string): Promise<any> {
     try {
-      const user = await User.findOne({email}); // Find a user in the database by their email
+      const user = await User.findOne({ email }); // Find a user in the database by their email
       user.password = password;
       user.save();
       return user;
@@ -33,13 +33,13 @@ export class UserRepository implements UserInterface {
   }
 
   // Method to find a user by their email
-  async findByEmail(email: string): Promise < IUsers | null > {
-  try {
-    const user = await User.findOne({ email }); // Find a user in the database by their email
-    return user; // Return the found user or null if not found
-  } catch(error) {
-    console.log(error); // Log any errors that occur during the process
-    return null; // Return null in case of an error
+  async findByEmail(email: string): Promise<IUsers | null> {
+    try {
+      const user = await User.findOne({ email }); // Find a user in the database by their email
+      return user; // Return the found user or null if not found
+    } catch (error) {
+      console.log(error); // Log any errors that occur during the process
+      return null; // Return null in case of an error
+    }
   }
-}
 }

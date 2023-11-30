@@ -8,7 +8,7 @@ export class UserInformationRepository implements UserInformationInterface {
           return userInformation; // Return the created UserInformation object
         } catch (error) {
           // If an error occurs during user creation, throw an error with a specific message
-          throw new Error(`Error creating user in the repository: ${error.message}`);
+          throw new Error(`Error creating user information  in the repository: ${error.message}`);
         }
       }
 }

@@ -1,3 +1,3 @@
 export interface UserInformationInterface{
-    create(data: any): Promise<any>;
+    create(data: any, session:any): Promise<any>;
 }

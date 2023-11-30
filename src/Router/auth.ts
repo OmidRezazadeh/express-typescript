@@ -1,7 +1,7 @@
 import express from "express";
-import { UserController }from '../Controllers/UserController';
+import { UserController }from '../Controllers/Client/UserController';
 import { loginLimiter } from "../Middlewares/rateLimit";
-import { ConfirmationCodeController } from "../Controllers/ConfirmationCodeController";
+import { ConfirmationCodeController } from "../Controllers/Client/ConfirmationCodeController";
 
 //initiating the router
 export const router = express.Router();

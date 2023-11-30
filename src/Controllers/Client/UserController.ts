@@ -1,12 +1,10 @@
 import { Request, Response, NextFunction } from "express";
-import { UserRepository } from "../Repositories/UserRepository";
-import { UserService } from '../Services/UserService';
-import { ConfirmationCodeService } from "../Services/ConfirmationCodeService";
-import { ConfirmationCodeRepository } from "../Repositories/ConfirmationCodeRepository";
-import { UserInformationRepository } from "../Repositories/UserInformationRepository";
-import { UserInformationService } from "../Services/UserInformationService";
-import { date } from "joi";
-import mongoose from "mongoose";
+import { UserRepository } from "../../Repositories/UserRepository";
+import { UserService } from '../../Services/UserService';
+import { ConfirmationCodeService } from "../../Services/ConfirmationCodeService";
+import { ConfirmationCodeRepository } from "../../Repositories/ConfirmationCodeRepository";
+import { UserInformationRepository } from "../../Repositories/UserInformationRepository";
+import { UserInformationService } from "../../Services/UserInformationService";
 
 // Controller handling user-related operations
 class userController {

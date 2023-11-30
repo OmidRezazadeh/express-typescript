@@ -1,7 +1,7 @@
 import { Request, Response, NextFunction } from "express";
-import { ConfirmationCodeService } from '../Services/ConfirmationCodeService';
-import { ConfirmationCodeRepository } from "../Repositories/ConfirmationCodeRepository";
-import { UserRepository } from "../Repositories/UserRepository";
+import { ConfirmationCodeService } from '../../Services/ConfirmationCodeService';
+import { ConfirmationCodeRepository } from "../../Repositories/ConfirmationCodeRepository";
+import { UserRepository } from "../../Repositories/UserRepository";
 class confirmationCodeController {
     private confirmationCodeService: ConfirmationCodeService;
 

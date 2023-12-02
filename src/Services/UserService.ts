@@ -7,6 +7,7 @@ import bcrypt from 'bcrypt';
 import jwt from 'jsonwebtoken';
 import path from 'path';
 import fs from 'fs';
+import { ObjectId } from 'mongoose';
 // Service handling user-related operations
 export class UserService {
 
@@ -26,13 +27,13 @@ export class UserService {
       const password = await bcrypt.hash(data.password, 10);
       const userData = { name: data.name, email: data.email, password: password };
       // Creating a new user and returning the result
-       const newUser = await this.userRepository.create(userData);  
-       console.log(newUser);   
+      const newUser = await this.userRepository.create(userData);
+
       return newUser;
     } catch (error) {
       console.log(error);
       throw new Error(`Error creating user: ${error.message}`);
-    
+
     }
   }
 
@@ -61,7 +62,7 @@ export class UserService {
     if (data.image) { // Checking if image data is provided
 
       const filePath = tempImage + data.image; // Creating the file path using the provided image data
-    
+
       const fileExtension = path.extname(filePath).toLowerCase(); // Extracting the file extension and converting it to lowercase
       if (!mimeTypeArray.includes(fileExtension)) { // Checking if the file extension is not in the allowed mime types
         // If the file extension is invalid, throwing an error indicating an invalid image extension
@@ -76,7 +77,7 @@ export class UserService {
         throw errorExists; // Throwing the error to handle it elsewhere
       }
     }
-    
+
 
   }
 
@@ -110,7 +111,7 @@ export class UserService {
       const token = jwt.sign({ user: { email: user.email, name: user.name } }, process.env.JWT_SECRET, { expiresIn: "2h" });
       return token;
     } else {
-      const error = new Error('کاربری بااین ایمیل یافت نشد');
+      const error = new Error("نام کاربری و رمز عبور اشتباه است ");
       (error as any).status = 400;
       throw error;
     }
@@ -119,6 +120,7 @@ export class UserService {
 
 
     const user = await this.userRepository.findByEmail(data.email);
+    console.log(user);
     if (!user) {
       const errorUser = new Error('کاربری بااین ایمیل یافت نشد');
       (errorUser as any).status = 400;
@@ -133,6 +135,13 @@ export class UserService {
     }
     const passwordHash = await bcrypt.hash(data.password, 10);
     await this.userRepository.updatePassword(passwordHash, data.email);
+  }
+
+
+  async updateUser(userInformationId:any, user: any) {
+    await this.userRepository.updateUser(userInformationId, user);
+
+
   }
 
 }

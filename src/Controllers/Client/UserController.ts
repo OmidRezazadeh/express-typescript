@@ -33,12 +33,12 @@ class userController {
       // // Validating user data before creating a new user
       await this.userService.validation(data);
       const user = await this.userService.create(data);
-      const userInformation = await this.userInformationService.create(user._id, data)
+      const userInformation = await this.userInformationService.create(user._id, data);
+      await this.userService.updateUser(userInformation._id,user);
+
       //Sending a successful response with the created user data
-      res.status(201).json({
-        user,
-        userInformation
-      });
+        await userInformation.populate('user');
+      res.status(201).json({userInformation});
     } catch (err) {
 
       next(err);
@@ -83,7 +83,7 @@ const userRepository = new UserRepository();
 const userInformationRepository = new UserInformationRepository();
 const confirmationCodeRepository = new ConfirmationCodeRepository();
 const userService = new UserService(userRepository);
-const userInformationService = new UserInformationService(userInformationRepository);
+const userInformationService = new UserInformationService(userInformationRepository,userRepository);
 const confirmationCodeService = new ConfirmationCodeService(userRepository, confirmationCodeRepository);
 // Creating an instance of the UserController and exporting it
 const UserController = new userController(userService, confirmationCodeService, userInformationService);

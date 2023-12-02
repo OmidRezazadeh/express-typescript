@@ -4,6 +4,15 @@ import { UserInterface } from "../interface/UserInterFace";
 // UserRepository implements the UserInterface
 export class UserRepository implements UserInterface {
 
+  async updateUser(userInformationId: string, user: any) {
+    try {
+      user.userInformation = userInformationId;
+      const updateUser = await user.save();
+      return updateUser;
+    } catch (error) {
+      throw new Error(`Error creating user in the repository: ${error.message}`);
+    }
+  }
   // Method to create a new user
   async create(data: any) {
     try {

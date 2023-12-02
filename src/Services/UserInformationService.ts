@@ -2,12 +2,18 @@ import { UserInformationRepository } from "../Repositories/UserInformationReposi
 import fs from 'fs';
 import { tempImage, destinationFolder } from "../configs/config";
 import path from 'path';
+import { UserRepository } from "../Repositories/UserRepository";
+import { User } from "../Models/User";
 
 export class UserInformationService {
     private userInformationRepository: UserInformationRepository;
-
-    constructor(userInformationRepository: UserInformationRepository) {
+    private userRepository: UserRepository;
+    constructor(
+        userInformationRepository: UserInformationRepository,
+        userRepository: UserRepository
+    ) {
         this.userInformationRepository = userInformationRepository;
+        this.userRepository = userRepository;
     }
 
     // Method to move user image from temporary location to a destination folder
@@ -53,5 +59,15 @@ export class UserInformationService {
         const userInformation = await this.userInformationRepository.create(newUserInformation);
 
         return userInformation; // Return created user information
+    }
+
+    async findUserInformationByEmail(email: string) {
+        // const user = await this.userRepository.findByEmail(email);
+        
+        const user = await User.findOne({ email }).populate('UserInformation');
+        console.log(user);
+
+
+
     }
 }

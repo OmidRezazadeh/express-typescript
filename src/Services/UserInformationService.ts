@@ -63,10 +63,13 @@ export class UserInformationService {
 
     async findUserInformationByEmail(email: string) {
         // const user = await this.userRepository.findByEmail(email);
-        
-        const user = await User.findOne({ email }).populate('UserInformation');
-        console.log(user);
 
+        const userInformation = await this.userRepository.findUserInformationByEmail(email);
+        return userInformation;
+    }
+    async updateUserInformation(userInformation: any, data: any) {
+      
+        const newUserInformation = await this.userInformationRepository.update(userInformation,data);
 
 
     }

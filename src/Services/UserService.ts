@@ -120,7 +120,6 @@ export class UserService {
 
 
     const user = await this.userRepository.findByEmail(data.email);
-    console.log(user);
     if (!user) {
       const errorUser = new Error('کاربری بااین ایمیل یافت نشد');
       (errorUser as any).status = 400;

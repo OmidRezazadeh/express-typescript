@@ -3,6 +3,7 @@ import fs from 'fs';
 import { tempImage, destinationFolder } from "../configs/config";
 import path from 'path';
 import { UserRepository } from "../Repositories/UserRepository";
+import { updateUserInformation } from "../Validations/UserInformationValidate";
 
 
 export class UserInformationService {
@@ -26,7 +27,7 @@ export class UserInformationService {
             fs.readFile(tempImagePath, (err, data) => {
                 if (err) {
                     // Handle error if image file cannot be read
-                    const errorExists = new Error("Requested image not found");
+                    const errorExists = new Error("عکسی یافت نشد");
                     (errorExists as any).status = 400; // Setting a custom status code
                     throw errorExists;
                 }
@@ -35,7 +36,7 @@ export class UserInformationService {
                 fs.writeFile(destinationFolderPath, data, (err) => {
                     if (err) {
                         // Handle error if the image cannot be moved to the destination folder
-                        const errorMove = new Error("Error uploading image");
+                        const errorMove = new Error("اپلود عکس با مشکل مواجه شده");
                         (errorMove as any).status = 400; // Setting a custom status code
                         throw errorMove;
                     }
@@ -62,26 +63,82 @@ export class UserInformationService {
     }
 
     async findUserInformationByEmail(email: string) {
-        // const user = await this.userRepository.findByEmail(email);
-
-        const userInformation = await this.userRepository.findUserInformationByEmail(email);
-        return userInformation;
+        // Find user information by email from the repository
+        const user = await this.userRepository.findUserInformationByEmail(email);
+        return user.userInformation;
     }
-    async validateUserInformationImage(image: string) {
-
-        if (image) {
-            console.log("ok");
-        }else{
-            console.log("no");
+    
+    async validateUserInformationImage(imageName: string, userInformation: any) {
+        if (imageName) {
+            if (imageName !== userInformation.image) {
+                // Operations if the imageName (new image) differs from the current user image
+    
+                const tempImagePath = path.join(tempImage, imageName); // Path to temporary image
+    
+                if (fs.existsSync(tempImagePath)) {
+                    // Read the temporary image file
+                    fs.readFile(tempImagePath, (err, data) => {
+                        if (err) {
+                            // Handle error if the image file cannot be read
+                            const errorExists = new Error("عکسی یافت نشد"); // Image not found
+                            (errorExists as any).status = 400; // Setting a custom status code
+                            throw errorExists;
+                        }
+    
+                        const destinationFolderPath = path.join(destinationFolder, imageName);
+                        // Write the image data to the destination folder
+                        fs.writeFile(destinationFolderPath, data, (err) => {
+                            if (err) {
+                                // Handle error if the image cannot be moved to the destination folder
+                                const errorMove = new Error("اپلود عکس با مشکل مواجه شده"); // Image upload encountered an issue
+                                (errorMove as any).status = 400; // Setting a custom status code
+                                throw errorMove;
+                            }
+                        });
+                    });
+                }
+    
+                // Prepare a list of files to manage (delete, move)
+                let fileList: string[] = [tempImagePath];
+                if (userInformation.image) {
+                    let userInformationImage = path.join(destinationFolder, userInformation.image);
+                    fileList.push(userInformationImage);
+                }
+    
+                // Delete each file in the fileList
+                fileList.forEach((filePath) => {
+                    fs.unlink(filePath, (err) => {
+                        if (err) {
+                            // Log an error if deleting the file encounters an issue
+                            console.error(`مشکلی در حذف عکس پیش  امده مجددا امتحان کنید ${filePath}: ${err}`);
+                        } else {
+                            console.log(`File ${filePath} has been deleted`);
+                        }
+                    });
+                });
+            }
+        } else {
+            // If there's no new image provided, but there's an existing image in userInformation, delete it
+            if (userInformation.image) {
+                const destinationFolderPath = path.join(destinationFolder, userInformation.image);
+                fs.unlinkSync(destinationFolderPath);
+            }
         }
-
     }
-
+    
     async updateUserInformation(userInformation: any, data: any) {
-
-        const newUserInformation = await this.userInformationRepository.update(userInformation, data);
-
-
-
+        // Update user information using the repository
+        await this.userInformationRepository.update(userInformation, data);
     }
-}
+    
+    async validateUserInformation(data: any) {
+        // Validate user information data
+        const { error } = updateUserInformation.validate(data);
+        if (error) {
+            // If there's an error in validation, throw an error with a custom status code
+            const errors = new Error(error.details[0].message);
+            (errors as any).status = 400;
+            throw error;
+        }
+    }
+}    

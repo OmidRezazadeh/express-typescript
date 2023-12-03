@@ -3,7 +3,7 @@ import fs from 'fs';
 import { tempImage, destinationFolder } from "../configs/config";
 import path from 'path';
 import { UserRepository } from "../Repositories/UserRepository";
-import { User } from "../Models/User";
+
 
 export class UserInformationService {
     private userInformationRepository: UserInformationRepository;
@@ -67,9 +67,20 @@ export class UserInformationService {
         const userInformation = await this.userRepository.findUserInformationByEmail(email);
         return userInformation;
     }
+    async validateUserInformationImage(image: string) {
+
+        if (image) {
+            console.log("ok");
+        }else{
+            console.log("no");
+        }
+
+    }
+
     async updateUserInformation(userInformation: any, data: any) {
-      
-        const newUserInformation = await this.userInformationRepository.update(userInformation,data);
+
+        const newUserInformation = await this.userInformationRepository.update(userInformation, data);
+
 
 
     }

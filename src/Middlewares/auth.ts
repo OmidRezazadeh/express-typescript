@@ -1,5 +1,5 @@
 import { Request, Response, NextFunction } from 'express';
-import jwt from 'jsonwebtoken';
+import jwt, { TokenExpiredError } from 'jsonwebtoken';
 
 export const authenticated = (req: Request, res: Response, next: NextFunction) => {
   const authHeader = req.get('Authorization');
@@ -10,13 +10,20 @@ export const authenticated = (req: Request, res: Response, next: NextFunction) =
     }
 
     const token = authHeader.split(' ')[1];
-    const decodedToken = jwt.verify(token, process.env.JWT_SECRET as string) as { user: { userId: string } };
+    jwt.verify(token, process.env.JWT_SECRET, (err: any) => {
+      if (err) {
 
-    if (!decodedToken) {
-      return res.status(400).json({ message: 'مجوز کافی ندارید' });
-    }
+        if (err instanceof TokenExpiredError) {
+          const ExpiredError = new Error('لطفا مجددا لاگین کنید');
+          (ExpiredError as any).status = 400;
+          throw ExpiredError;
+        }
+        const FailedAuthenticateError = new Error('لاگین با مشکل مواجه شد');
+        (FailedAuthenticateError as any).status = 400;
+        throw FailedAuthenticateError;
+      }
 
-    req.body.userId = decodedToken.user.userId;
+    });
     next();
   } catch (err) {
     next(err);

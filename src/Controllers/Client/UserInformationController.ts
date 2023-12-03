@@ -1,7 +1,7 @@
 import { Request, Response, NextFunction } from "express";
 import { UserInformationService } from "../../Services/UserInformationService";
 import { UserInformationRepository } from "../../Repositories/UserInformationRepository";
-import jwt from 'jsonwebtoken';
+import { getDecodedToken } from "../../utils/token"
 import { UserRepository } from "../../Repositories/UserRepository";
 
 class userInformationController {
@@ -10,14 +10,11 @@ class userInformationController {
         this.userInformationService = userInformationService;
     }
     update = async (req: Request, res: Response, next: NextFunction) => {
-        const authHeader = req.get('Authorization');
-        const token = authHeader.split(' ')[1];
-        const decodedToken: any = jwt.verify(token, process.env.JWT_SECRET);
-
-        const email = decodedToken.user.email;
+        const token = getDecodedToken(req.get('Authorization'));
         const data = { link: req.body.link, bio: req.body.bio, image: req.body.image };
-        const userInformation = await this.userInformationService.findUserInformationByEmail(email);
-        const updateUserInformation = await this.userInformationService.updateUserInformation(userInformation,data);
+        await this.userInformationService.validateUserInformationImage(data.image);
+        const userInformation = await this.userInformationService.findUserInformationByEmail(token.user.email);
+        const updateUserInformation = await this.userInformationService.updateUserInformation(userInformation, data);
 
     }
 

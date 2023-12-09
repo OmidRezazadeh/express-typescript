@@ -6,6 +6,7 @@ export interface IUsers {
     email: string;
     password: string;
     userInformation: Schema.Types.ObjectId;
+    roles: [{ type: Schema.Types.ObjectId, ref: 'Role' }], // Array of role references
 }
 
 // Create a Mongoose schema for the User model using the defined interface
@@ -18,11 +19,12 @@ const UserSchema = new Schema<IUsers>({
 
     // User's password is a required string field
     password: { type: String, required: true },
-    userInformation: { 
+    userInformation: {
         type: Schema.Types.ObjectId,
         ref: 'UserInformation'
-      }
-    
+    },
+    roles: [{ type: Schema.Types.ObjectId, ref: 'Role' }], // Array of role references
+
 });
 
 // Create a Mongoose model named "User" based on the UserSchema

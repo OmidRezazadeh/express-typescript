@@ -4,12 +4,12 @@ import { UserInterface } from "../interface/UserInterFace";
 // UserRepository implements the UserInterface
 export class UserRepository implements UserInterface {
 
- async updateUser(userInformationId: string, user: any){
-    try{
-     user.userInformation=userInformationId;
-   const updateUser=  await user.save();
-   return updateUser
-    }catch(error){
+  async updateUser(userInformationId: string, user: any) {
+    try {
+      user.userInformation = userInformationId;
+      const updateUser = await user.save();
+      return updateUser
+    } catch (error) {
       throw new Error(`Error creating user in the repository: ${error.message}`);
     }
   }
@@ -25,9 +25,15 @@ export class UserRepository implements UserInterface {
     }
   }
 
-  // Method for user login (currently doesn't return anything)
-  async login(data: any): Promise<any> {
-    console.log("ok"); // Placeholder - currently logs "ok" but doesn't perform login logic
+
+  async findById(userId: any): Promise<any> {
+    try {
+      const user = await User.findOne({ _id: userId }); // Find a user in the database by their email
+      return user; // Return the found user or null if not found
+    } catch (error) {
+      console.log(error); // Log any errors that occur during the process
+    }
+
   }
 
   async updatePassword(password: string, email: string): Promise<any> {

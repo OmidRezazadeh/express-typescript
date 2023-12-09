@@ -2,12 +2,10 @@ import { UserRepository } from '../Repositories/UserRepository';
 import { UserInformationRepository } from '../Repositories/UserInformationRepository';
 import { userValidate, validationLogin, validationUpdatePassword } from "../Validations/UserValidate";
 import { tempImage, mimeTypeArray } from '../configs/config';
-
 import bcrypt from 'bcrypt';
 import jwt from 'jsonwebtoken';
 import path from 'path';
 import fs from 'fs';
-import { ObjectId } from 'mongoose';
 // Service handling user-related operations
 export class UserService {
 
@@ -40,24 +38,24 @@ export class UserService {
   // Method to validate user data (e.g., during registration)
   async validation(data: any): Promise<any> {
 
-    // let email = data.email;
-    // const userExists = await this.userRepository.findByEmail(email);
+    let email = data.email;
+    const userExists = await this.userRepository.findByEmail(email);
 
 
-    // // Checking if the email already exists in the database
-    // if (userExists) {
-    //   const errorEmail = new Error('این ایمیل قبلا استفاده شده');
-    //   (errorEmail as any).status = 400;
-    //   throw errorEmail;
-    // }
+    // Checking if the email already exists in the database
+    if (userExists) {
+      const errorEmail = new Error('این ایمیل قبلا استفاده شده');
+      (errorEmail as any).status = 400;
+      throw errorEmail;
+    }
 
-    // // Validating user data using a predefined schema
-    // const { error } = userValidate.validate(data);
-    // if (error) {
-    //   const errors = new Error(error.details[0].message);
-    //   (errors as any).status = 400;
-    //   throw errors;
-    // }
+    // Validating user data using a predefined schema
+    const { error } = userValidate.validate(data);
+    if (error) {
+      const errors = new Error(error.details[0].message);
+      (errors as any).status = 400;
+      throw errors;
+    }
 
     if (data.image) { // Checking if image data is provided
 

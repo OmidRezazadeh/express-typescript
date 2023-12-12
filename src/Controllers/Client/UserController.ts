@@ -46,7 +46,7 @@ class userController {
  
      const userInformationId=(userInformation as any) ._id;
       await this.userService.updateUser(userInformationId, user,session);
-
+ 
       //Sending a successful response with the created user data
       await session.commitTransaction();
       session.endSession();

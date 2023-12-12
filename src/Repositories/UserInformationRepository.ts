@@ -1,10 +1,10 @@
 import { UserInformation } from "../Models/UserInformation";
 import { UserInformationInterface } from "../interface/UserInformationInterface";
 export class UserInformationRepository implements UserInformationInterface {
-  async create(data: any) {
+  async create(data: any, session: any) {
     try {
 
-      const userInformation = await UserInformation.create(data); // Create a new UserInformation using the UserInformation model
+      const userInformation = await UserInformation.create([data], { session: session }); // Create a new UserInformation using the UserInformation model
       return userInformation; // Return the created UserInformation object
     } catch (error) {
       // If an error occurs during user creation, throw an error with a specific message

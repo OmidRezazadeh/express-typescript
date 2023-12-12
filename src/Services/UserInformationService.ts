@@ -49,15 +49,15 @@ export class UserInformationService {
     }
 
     // Method to create user information
-    async create(userId: any, data: any) {
+    async create(userId: any, data: any,session:any) {
         // Move the user image to the destination folder
-        this.moveUserImage(data.image);
+        // this.moveUserImage(data.image);
 
         // Create new user information object
         const newUserInformation = { phone: data.phone, user: userId, image: data.image };
 
         // Save user information using the repository
-        const userInformation = await this.userInformationRepository.create(newUserInformation);
+        const userInformation = await this.userInformationRepository.create(newUserInformation,session);
 
         return userInformation; // Return created user information
     }

@@ -1,4 +1,4 @@
-import { Schema, model } from "mongoose";
+import { ObjectId, Schema, model } from "mongoose";
 
 // Define an interface representing the structure of a user document
 export interface IUsers {

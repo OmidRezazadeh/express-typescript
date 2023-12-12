@@ -4,20 +4,22 @@ import { UserInterface } from "../interface/UserInterFace";
 // UserRepository implements the UserInterface
 export class UserRepository implements UserInterface {
 
- async updateUser(userInformationId: string, user: any){
-    try{
-     user.userInformation=userInformationId;
-   const updateUser=  await user.save();
-   return updateUser
-    }catch(error){
+  async updateUser(userInformationId: string, user: any, session: any) {
+    try {
+      // user.userInformation = userInformationId;
+      const userInformation = { userInformation: userInformationId };
+      // const updateUser = await user.save({ session: session });
+      const updateUser = await User.updateOne({ _id: user._id }, userInformation).session(session)
+      return updateUser
+    } catch (error) {
       throw new Error(`Error creating user in the repository: ${error.message}`);
     }
   }
   // Method to create a new user
-  async create(data: any) {
+  async create(data: any, session: any) {
     try {
 
-      const user = await User.create(data); // Create a new user using the User model
+      const user = await User.create([data], { session: session }); // Create a new user using the User model
       return user; // Return the created user object
     } catch (error) {
       // If an error occurs during user creation, throw an error with a specific message

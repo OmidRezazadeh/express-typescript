@@ -7,7 +7,6 @@ import bcrypt from 'bcrypt';
 import jwt from 'jsonwebtoken';
 import path from 'path';
 import fs from 'fs';
-import { ObjectId } from 'mongoose';
 // Service handling user-related operations
 export class UserService {
 
@@ -21,13 +20,13 @@ export class UserService {
   }
 
   // Method to create a new user
-  async create(data: any) {
+  async create(data: any, session: any) {
     try {
       // Hashing the password before storing it
       const password = await bcrypt.hash(data.password, 10);
       const userData = { name: data.name, email: data.email, password: password };
       // Creating a new user and returning the result
-      const newUser = await this.userRepository.create(userData);
+      const newUser = await this.userRepository.create(userData, session);
 
       return newUser;
     } catch (error) {
@@ -137,8 +136,8 @@ export class UserService {
   }
 
 
-  async updateUser(userInformationId:any, user: any) {
-    await this.userRepository.updateUser(userInformationId, user);
+  async updateUser(userInformationId: any, user: any, session: any) {
+    await this.userRepository.updateUser(userInformationId, user, session);
 
 
   }

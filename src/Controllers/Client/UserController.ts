@@ -1,4 +1,5 @@
 import { Request, Response, NextFunction } from "express";
+import mongoose, { Document, ClientSession } from 'mongoose';
 import { UserRepository } from "../../Repositories/UserRepository";
 import { UserService } from '../../Services/UserService';
 import { ConfirmationCodeService } from "../../Services/ConfirmationCodeService";
@@ -26,23 +27,37 @@ class userController {
 
   // Method to handle user registration
   register = async (req: Request, res: Response, next: NextFunction) => {
+ // Get the connected instance
+
+
+ // Open a session
+ const session: ClientSession = await mongoose.startSession();
+  session.startTransaction(); // Start a transaction using the session
+
+
     try {
-
       const data = req.body;
-
       // // Validating user data before creating a new user
       await this.userService.validation(data);
-      const user = await this.userService.create(data);
-      const userInformation = await this.userInformationService.create(user._id, data);
-      await this.userService.updateUser(userInformation._id,user);
+      const user = await this.userService.create(data,session);
+
+      const userId = (user as any)._id;
+      const userInformation = await this.userInformationService.create(userId, data,session);
+ 
+     const userInformationId=(userInformation as any) ._id;
+      await this.userService.updateUser(userInformationId, user,session);
 
       //Sending a successful response with the created user data
-        await userInformation.populate('user');
-      res.status(201).json({userInformation});
+      await session.commitTransaction();
+      session.endSession();
+      res.status(201).json({ "userInformation":userInformation, "user":user });
     } catch (err) {
+      await session.abortTransaction();
 
       next(err);
       // Passing any errors to the error handling middleware
+    }finally {
+      session.endSession(); // End the session after the transaction is completed or aborted
     }
   }
 
@@ -83,7 +98,7 @@ const userRepository = new UserRepository();
 const userInformationRepository = new UserInformationRepository();
 const confirmationCodeRepository = new ConfirmationCodeRepository();
 const userService = new UserService(userRepository);
-const userInformationService = new UserInformationService(userInformationRepository,userRepository);
+const userInformationService = new UserInformationService(userInformationRepository, userRepository);
 const confirmationCodeService = new ConfirmationCodeService(userRepository, confirmationCodeRepository);
 // Creating an instance of the UserController and exporting it
 const UserController = new userController(userService, confirmationCodeService, userInformationService);

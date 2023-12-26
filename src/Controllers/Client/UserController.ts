@@ -25,41 +25,55 @@ class userController {
     this.userInformationService = userInformationService;
   }
 
-  // Method to handle user registration
-  register = async (req: Request, res: Response, next: NextFunction) => {
- // Get the connected instance
 
 
- // Open a session
- const session: ClientSession = await mongoose.startSession();
+
+
+
+// Method to handle user registration
+register = async (req: Request, res: Response, next: NextFunction) => {
+
+  // Open a session
+  const session: ClientSession = await mongoose.startSession();
   session.startTransaction(); // Start a transaction using the session
 
+  try {
+    const data = req.body;
 
-    try {
-      const data = req.body;
-      // // Validating user data before creating a new user
-      await this.userService.validation(data);
-      const user = await this.userService.create(data,session);
+    // Validating user data before creating a new user
+    await this.userService.validation(data);
 
-      const userId = (user as any)._id;
-      const userInformation = await this.userInformationService.create(userId, data,session);
- 
-     const userInformationId=(userInformation as any) ._id;
-      await this.userService.updateUser(userInformationId, user,session);
- 
-      //Sending a successful response with the created user data
-      await session.commitTransaction();
-      session.endSession();
-      res.status(201).json({ "userInformation":userInformation, "user":user });
-    } catch (err) {
-      await session.abortTransaction();
+    // Creating a new user using the user service and within the session
+    const user = await this.userService.create(data, session);
 
-      next(err);
-      // Passing any errors to the error handling middleware
-    }finally {
-      session.endSession(); // End the session after the transaction is completed or aborted
-    }
+    // Creating user information associated with the user
+    const userId = (user as any)._id;
+    const userInformation = await this.userInformationService.create(userId, data, session);
+
+    // Updating user data with the user information
+    const userInformationId = (userInformation as any)._id;
+    await this.userService.updateUser(userInformationId, user, session);
+
+    // Commit the transaction after successful operations
+    await session.commitTransaction();
+    session.endSession();
+
+    // Sending a successful response with the created user data
+    res.status(201).json({ "userInformation": userInformation, "user": user });
+  } catch (err) {
+    // If an error occurs, abort the transaction and pass the error to the error handling middleware
+    await session.abortTransaction();
+    next(err);
+  } finally {
+    // End the session after the transaction is completed or aborted
+    session.endSession();
   }
+}
+
+
+
+
+
 
   // Method to handle user login
   login = async (req: Request, res: Response, next: NextFunction) => {

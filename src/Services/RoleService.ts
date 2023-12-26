@@ -35,8 +35,31 @@ export class RoleService {
             throw roleError;
         }
     }
-    async assignRole(data:any){
-await this.userRepository.a
+
+    async storeValidate(data: any) {
+        const roleExists = await this.roleRepository.findByName(data.role);
+        if (roleExists) {
+            const roleError = new Error(" این نقش موجود میباشد");
+            (roleError as any).status = 400;
+            throw roleError;
+        }
+
+        const { error } = assignRole.validate(data.role);
+        if (error) {
+            const errors = new Error(error.details[0].message);
+            (errors as any).status = 400;
+            throw error;
+        }
+
+    }
+
+    async store(data: any) {
+        const role = await this.roleRepository.store(data);
+        return role;
+
+    }
+    async assignRole(data: any) {
+        await this.userRepository
 
     }
 

@@ -5,4 +5,12 @@ export class RoleRepository implements RoleInterface {
         const role = await Role.findOne({ name });
         return role;
     }
+    async store(data: any) {
+        try {
+            const role = await Role.create(data);
+            return role;
+        } catch (error) {
+            throw new Error(`Error creating role in the repository: ${error.message}`);
+        }
+    }
 }

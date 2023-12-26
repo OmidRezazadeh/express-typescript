@@ -6,6 +6,7 @@ import bcrypt from 'bcrypt';
 import jwt from 'jsonwebtoken';
 import path from 'path';
 import fs from 'fs';
+import { string } from 'joi';
 // Service handling user-related operations
 export class UserService {
 
@@ -137,8 +138,21 @@ export class UserService {
 
   async updateUser(userInformationId: any, user: any, session: any) {
     await this.userRepository.updateUser(userInformationId, user, session);
+  }
 
 
+  async findById(userId: string) {
+
+    const user =await this.userRepository.findById(userId);
+    console.log(user);
+    if (!user) {
+     
+      const errorUser = new Error('کاربری بااین ایدی یافت نشد');
+      (errorUser as any).status = 400;
+      throw errorUser;
+    }
+
+    return user;
   }
 
 }

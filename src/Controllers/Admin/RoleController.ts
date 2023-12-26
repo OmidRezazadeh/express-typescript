@@ -16,19 +16,29 @@ class roleController {
         this.userService = userService;
     }
     assignRole = async (req: Request, res: Response, next: NextFunction) => {
-       
-
         try {  
-            const userId = req.params.id;
-            await this.userService.findById(userId);
-            const data = req.body;
-            await this.roleService.validateAssignRole(data);
-            await this.roleService.assignRole(data, userId);
-            res.status(201).json({"message":" بروز رسانی با موفقیت انجام شد"});
+          // Extract user ID from request parameters
+          const userId = req.params.id;
+      
+          // Find user by ID
+          await this.userService.findById(userId);
+      
+          // Extract data from request body
+          const data = req.body;
+      
+          // Validate the assigned role
+          await this.roleService.validateAssignRole(data);
+          
+          // Assign role to the user
+          await this.roleService.assignRole(data, userId);
+          
+          // Send success response
+          res.status(201).json({"message":" بروز رسانی با موفقیت انجام شد"});
         } catch (error) {
-            next(error);
+          // Pass any errors to the next middleware
+          next(error);
         }
-    }
+      }
 
     store = async (req: Request, res: Response, next: NextFunction) => {
 

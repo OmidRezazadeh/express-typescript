@@ -6,13 +6,17 @@ export class UserRepository implements UserInterface {
 
   async updateRole(data: any, userId: string) {
     try {
-
-      const user = await User.findById({_id:userId}); // Find a user in the database by their email
-      user.roles =data.roles;
+      // Find the user by ID
+      const user = await User.findById({_id:userId});
+  
+      // Update the user's roles with the provided data
+      user.roles = data.roles;
+  
+      // Save and return the updated user
       user.save();
       return user;
     } catch (error) {
-      // Handle any errors that occur during the update
+      // If an error occurs during the update, return an error response
       return { status: 500, message: 'Error updating roles', error: error.message };
     }
   }
@@ -53,15 +57,20 @@ export class UserRepository implements UserInterface {
  
   async updatePassword(password: string, email: string): Promise<any> {
     try {
-      const user = await User.findOne({ email }); // Find a user in the database by their email
+      // Find the user by email
+      const user = await User.findOne({ email });
+      
+      // Update the user's password with the new password
       user.password = password;
+      
+      // Save and return the updated user
       user.save();
       return user;
     } catch (err) {
-      console.log(err)
+      // If an error occurs during the update, log the error
+      console.log(err);
     }
   }
-
   // Method to find a user by their email
   async findByEmail(email: string): Promise<IUsers | null> {
     try {

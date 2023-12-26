@@ -142,17 +142,16 @@ export class UserService {
 
 
   async findById(userId: string) {
-
-    const user =await this.userRepository.findById(userId);
-    console.log(user);
+    // Find a user in the repository by ID
+    const user = await this.userRepository.findById(userId);
+    
+    // If the user is not found, throw an error
     if (!user) {
-     
       const errorUser = new Error('کاربری بااین ایدی یافت نشد');
       (errorUser as any).status = 400;
       throw errorUser;
     }
-
+    // Return the found user
     return user;
   }
-
 }

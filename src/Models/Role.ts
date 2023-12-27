@@ -1,5 +1,5 @@
 import { Schema, model } from "mongoose";
-
+export const ROLE_ADMIN="admin"
 interface IRoles {
   name: string;
   // other role properties if needed

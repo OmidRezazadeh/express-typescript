@@ -1,4 +1,5 @@
 import { User } from '../Models/User'; // Importing the User model
+import {ROLE_ADMIN} from "../Models/Role";
 import { Request, Response, NextFunction } from 'express'; // Importing necessary Express types
 import { getDecodedToken } from "../utils/token"; // Importing a function to decode tokens
 
@@ -22,13 +23,13 @@ export const checkAdminRoleMiddleware = async (req: Request, res: Response, next
 
         // Looping through the roles to find if the user has the "admin" role
         for (let role of roles) {
-            if (role.name == "admin") { // Checking if the role is "admin"
-                isAdmin = "admin"; // Setting isAdmin flag if the user has the admin role
+            if (role.name == ROLE_ADMIN ) { // Checking if the role is "admin"
+                isAdmin = ROLE_ADMIN; // Setting isAdmin flag if the user has the admin role
             } 
         }
 
         // Checking if the user is not an admin based on the role check
-        if (isAdmin !== "admin") return res.status(400).json({ message: 'مجوز کافی ندارید' }); // Responding with an error if the user is not an admin
+        if (isAdmin !== ROLE_ADMIN) return res.status(400).json({ message: 'مجوز کافی ندارید' }); // Responding with an error if the user is not an admin
 
         // Proceeding to the next middleware if the user is an admin
         next();

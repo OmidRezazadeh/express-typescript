@@ -1,7 +1,8 @@
-import { ObjectId, Schema, model } from "mongoose";
+import {ObjectId, Schema, model } from "mongoose";
 
 // Define an interface representing the structure of a user document
 export interface IUsers {
+    _id: ObjectId,
     name: string;
     email: string;
     password: string;

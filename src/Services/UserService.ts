@@ -107,7 +107,7 @@ export class UserService {
     // Comparing the provided password with the stored hashed password
     if (await bcrypt.compare(data.password, user.password)) {
       // Generating a JWT token upon successful authentication
-      const token = jwt.sign({ user: { email: user.email, name: user.name } }, process.env.JWT_SECRET, { expiresIn: "2h" });
+      const token = jwt.sign({ user: {user_id:user._id, email: user.email, name: user.name } }, process.env.JWT_SECRET, { expiresIn: "2h" });
       return token;
     } else {
       const error = new Error("نام کاربری و رمز عبور اشتباه است ");
@@ -144,7 +144,7 @@ export class UserService {
   async findById(userId: string) {
     // Find a user in the repository by ID
     const user = await this.userRepository.findById(userId);
-    
+
     // If the user is not found, throw an error
     if (!user) {
       const errorUser = new Error('کاربری بااین ایدی یافت نشد');

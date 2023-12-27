@@ -1,6 +1,6 @@
 import { Schema, model } from "mongoose";
 
-interface IRoles extends Document {
+interface IRoles {
   name: string;
   // other role properties if needed
 }

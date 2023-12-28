@@ -18,6 +18,8 @@ export class PostRepository implements PostInterface {
         // Populating the 'user' field in the post
         // Note: populate() might not work directly on post, depending on the ORM or library used
         // It usually works on queries rather than single objects
-        return post.populate('user'); // Returning the populated post
+        // Returning the populated post
+        await post.populate('user', '_id name email');
+        return post;
     }
 }

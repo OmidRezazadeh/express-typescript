@@ -3,7 +3,8 @@ const connectDB = require("./configs/database");
 import { router } from "./Router/auth"; // Importing your API router
 import { uploadRouter } from "./Router/file";
 import { userRouter } from "./Router/user";
-import {AdminRouter} from "./Router/admin";
+import { adminRouter } from "./Router/admin";
+import { postRouter } from './Router/post';
 import { errorHandler } from "./Middlewares/errors"; // Importing error handling middleware
 import dotenv from 'dotenv';
 const app = express();
@@ -14,11 +15,13 @@ app.use(express.urlencoded({ extended: true }));
 // Connecting to the database
 connectDB();
 
-// Using the defined router for '/api/v1/users' endpoints
+
+app.use("/api/v1/posts", postRouter);
 app.use('/api/v1/users', router);
 app.use("/api/v1/upload", uploadRouter);
 app.use("/api/v1/user-information", userRouter);
-app.use("/api/v1/admin",AdminRouter);
+app.use("/api/v1/admin", adminRouter);
+
 // Implementing the error handling middleware for any errors in the application
 app.use(errorHandler);
 

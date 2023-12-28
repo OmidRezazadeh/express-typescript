@@ -1,4 +1,3 @@
-import { Request, Response, NextFunction } from "express";
 import jwt from 'jsonwebtoken';
 
 export const getDecodedToken = (authorization:any) => {

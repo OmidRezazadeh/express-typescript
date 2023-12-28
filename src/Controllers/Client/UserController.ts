@@ -25,11 +25,6 @@ class userController {
     this.userInformationService = userInformationService;
   }
 
-
-
-
-
-
 // Method to handle user registration
 register = async (req: Request, res: Response, next: NextFunction) => {
 

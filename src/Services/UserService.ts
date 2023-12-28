@@ -1,12 +1,11 @@
 import { UserRepository } from '../Repositories/UserRepository';
-import { UserInformationRepository } from '../Repositories/UserInformationRepository';
 import { userValidate, validationLogin, validationUpdatePassword } from "../Validations/UserValidate";
 import { tempImage, mimeTypeArray } from '../configs/config';
 import bcrypt from 'bcrypt';
 import jwt from 'jsonwebtoken';
 import path from 'path';
 import fs from 'fs';
-import { string } from 'joi';
+
 // Service handling user-related operations
 export class UserService {
 
@@ -58,9 +57,10 @@ export class UserService {
       throw errors;
     }
 
-    if (data.image) { // Checking if image data is provided
-
-      const filePath = tempImage + data.image; // Creating the file path using the provided image data
+    // Checking if image data is provided
+    if (data.image) {
+      // Creating the file path using the provided image data
+      const filePath = tempImage + data.image;
 
       const fileExtension = path.extname(filePath).toLowerCase(); // Extracting the file extension and converting it to lowercase
       if (!mimeTypeArray.includes(fileExtension)) { // Checking if the file extension is not in the allowed mime types
@@ -107,7 +107,7 @@ export class UserService {
     // Comparing the provided password with the stored hashed password
     if (await bcrypt.compare(data.password, user.password)) {
       // Generating a JWT token upon successful authentication
-      const token = jwt.sign({ user: {user_id:user._id, email: user.email, name: user.name } }, process.env.JWT_SECRET, { expiresIn: "2h" });
+      const token = jwt.sign({ user: { user_id: user._id, email: user.email, name: user.name } }, process.env.JWT_SECRET, { expiresIn: "2h" });
       return token;
     } else {
       const error = new Error("نام کاربری و رمز عبور اشتباه است ");

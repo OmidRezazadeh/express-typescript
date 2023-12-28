@@ -13,8 +13,12 @@ class postController {
     async create(req: Request, res: Response, next: NextFunction) {
         try {
             // Extracting necessary data from the request body
-            const data = { image: req.body.image || null, title: req.body.title, description: req.body.description };
-            
+            const data = {
+                image: req.body.image || null,
+                title: req.body.title,
+                description: req.body.description
+            };
+
             // Validating the extracted data
             await this.postService.validate(data);
 

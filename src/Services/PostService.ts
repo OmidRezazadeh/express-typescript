@@ -1,10 +1,9 @@
-import { storeValidate } from "../Validations/PostValidate";
-import { PostRepository } from "../Repositories/PostRepository";
-import { checkImageValidity } from "../utils/checkImageValidity";
-import { tempImage, destinationFolderPost } from "../configs/config";
-import fs from 'fs';
-import path from 'path';
-
+import { storeValidate } from "../Validations/PostValidate"; // Importing validation function
+import { PostRepository } from "../Repositories/PostRepository"; // Importing PostRepository
+import { checkImageValidity } from "../utils/checkImageValidity"; // Importing image validation function
+import { tempImage, destinationFolderPost } from "../configs/config"; // Importing folder paths
+import fs from 'fs'; // File system module
+import path from 'path'; // Path module
 
 export class PostService {
     private postRepository: PostRepository;
@@ -25,7 +24,7 @@ export class PostService {
                 fs.writeFile(destinationFolderPath, data, (err) => {
                     if (err) {
                         // Handle error if the image cannot be moved to the destination folder
-                        const errorMove = new Error("اپلود عکس با مشکل مواجه شده");
+                        const errorMove = new Error("Error encountered while uploading the image");
                         (errorMove as any).status = 400; // Setting a custom status code
                         throw errorMove;
                     }
@@ -37,32 +36,28 @@ export class PostService {
         fs.unlinkSync(tempImagePath);
     }
 
+    // Validation function for incoming data
     async validate(data: any) {
-    
-        const { error } = storeValidate.validate(data);
+        const { error } = storeValidate.validate(data); // Validating the incoming data
         if (error) {
+            // Throw an error if validation fails
             const errors = new Error(error.details[0].message);
             (errors as any).status = 400;
             throw errors;
         }
 
         if (data.image) {
-            checkImageValidity(data.image);
+            checkImageValidity(data.image); // Check image validity if an image is provided
         }
-        
-
     }
 
-
+    // Method to create a new post
     async create(data: any, userId: string) {
         if(data.image){
-           this.movePostImage(data.image)
+            this.movePostImage(data.image); // Move the image if it exists in the data
         }
-        const post = await this.postRepository.create(data,userId);
+        const post = await this.postRepository.create(data, userId); // Create a post using the repository
 
-        return post;
-    
+        return post; // Return the created post
     }
-
-
 }

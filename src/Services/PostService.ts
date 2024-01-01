@@ -50,6 +50,9 @@ export class PostService {
             checkImageValidity(data.image); // Check image validity if an image is provided
         }
     }
+  async  updateValidate(data:any){
+
+  }
 
     // Method to create a new post
     async create(data: any, userId: string) {
@@ -57,7 +60,7 @@ export class PostService {
             this.movePostImage(data.image); // Move the image if it exists in the data
         }
         const post = await this.postRepository.create(data, userId); // Create a post using the repository
-
-        return post; // Return the created post
+ // Return the created post
+        return post;
     }
 }

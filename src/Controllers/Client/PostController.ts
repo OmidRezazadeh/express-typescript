@@ -36,6 +36,25 @@ class postController {
             next(error);
         }
     }
+
+    async update(req: Request, res: Response, next: NextFunction) {
+        const data = {
+            image: req.body.image || null,
+            title: req.body.title,
+            description: req.body.description
+        };
+
+        // Validating the extracted data
+        await this.postService.updateValidate(data);
+
+
+         // Extracting user ID from the decoded token in the request header
+         const token = getDecodedToken(req.get('Authorization'));
+         const userId = token.user.user_id;
+
+         // Creating a post using the PostService
+         const post = await this.postService.create(data, userId);
+    }
 }
 
 // Creating instances of PostRepository and PostService

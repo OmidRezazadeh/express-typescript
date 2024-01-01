@@ -22,4 +22,5 @@ export class PostRepository implements PostInterface {
         await post.populate('user', '_id name email');
         return post;
     }
+    
 }

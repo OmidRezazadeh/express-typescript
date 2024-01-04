@@ -4,3 +4,5 @@ node_modules
 src/Public/upload/images
 src/Public/upload/users
 src/Public/upload/posts
+.gitignore
+

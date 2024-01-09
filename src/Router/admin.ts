@@ -5,4 +5,4 @@ import express from "express";
 export const adminRouter = express.Router();
 adminRouter.post("/roles/store",authenticated,checkAdminRoleMiddleware, RoleController.store.bind(RoleController));
 adminRouter.put("/roles/assign/users/:id",authenticated,RoleController.assignRole.bind(RoleController));
-
+adminRouter.put("/roles/:id/edit/",authenticated,RoleController.edit.bind(RoleController));

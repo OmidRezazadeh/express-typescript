@@ -43,7 +43,8 @@ export class RoleRepository implements RoleInterface {
       let query: any = {};
       // Check if 'name' field exists in the data object and create a query for case-insensitive name search
       if (data.name !== undefined) {
-        query = { 'name': { $regex: data.name, $options: 'i' } };
+        const regex = new RegExp(`^${data.name}.*|.*${data.name}.*$`, 'i');
+        query = { 'name': regex };
       }
   
      const paginateData= paginate(reqData,totalCount);

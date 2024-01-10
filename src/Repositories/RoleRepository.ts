@@ -30,8 +30,46 @@ export class RoleRepository implements RoleInterface {
     }
   }
   async update(data: object, roleId: string) {
-    console.log(data, roleId);
-
-    await Role.findOneAndUpdate({_id:roleId},data,{new: true});
+    return await Role.findOneAndUpdate({ _id: roleId }, data, { new: true });
   }
+
+  
+  async list(data: any, reqData: any) {
+    try {
+      // Pagination setup
+      const page = reqData.page || 2; // Default page to 2 if not provided
+      const pageSize = 2; // Number of items per page
+      const startIndex = (page - 1) * pageSize; // Calculation to determine the start index for pagination
+  
+      // Fetch total count of documents in the Role collection
+      const totalCount = await Role.countDocuments({});
+  
+      let query: any = {};
+      // Check if 'name' field exists in the data object and create a query for case-insensitive name search
+      if (data.name !== undefined) {
+        query = { 'name': { $regex: data.name, $options: 'i' } };
+      }
+  
+      // Fetch paginated items based on the query, skipping items based on startIndex, limiting by pageSize, and sorting by _id in descending order
+      const paginatedItems = await Role.find(query)
+        .skip(startIndex)
+        .limit(pageSize)
+        .sort({ _id: -1 })
+        .exec();
+  
+      // Calculate total number of pages for pagination
+      const totalPages = Math.ceil(totalCount / pageSize);
+  
+      // Prepare response object containing pagination information and fetched data
+      const response = {
+        page: page,
+        total_pages: totalPages,
+        data: paginatedItems,
+      };
+      return response; // Return the response object
+    } catch (error) {
+      console.log(error); // Log any errors that occur during the process
+    }
+  }
+  
 }

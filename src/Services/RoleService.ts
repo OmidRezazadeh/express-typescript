@@ -2,6 +2,7 @@ import { assignRole } from "../Validations/RoleValidate";
 import { RoleRepository } from "../Repositories/RoleRepository";
 import { UserRepository } from "../Repositories/UserRepository";
 
+
 export class RoleService {
   private roleRepository: RoleRepository;
   private userRepository: UserRepository;
@@ -9,29 +10,52 @@ export class RoleService {
     this.roleRepository = roleRepository;
     this.userRepository = userRepository;
   }
+
+  async findById(roleId: string) {
+   return await this.roleRepository.findById(roleId);
+
+  }
+
+  async list(data: any, reqData:any) {
+    return await this.roleRepository.list(data,reqData);
+  }
+  // Validate and edit data for a given role
   async editValidate(data: object, roleId: string) {
+    // Retrieve the role by ID from the repository
     const role = await this.roleRepository.findById(roleId);
+
+    // Check if the role exists
     if (!role) {
-      const roleError = new Error("نقشی یافت نشد");
-      (roleError as any).status = 400;
-      throw roleError;
-    }
-    const roleName = Object.values(data)[0];
-    if (role.name === roleName) {
-      const roleNameError = new Error(" این نقش در سیستم وجود دارد");
-      (roleNameError as any).status = 400;
-      throw roleNameError;
+      // If the role does not exist, throw an error indicating it was not found
+      const roleError = new Error("نقشی یافت نشد"); // Error message in Persian
+      (roleError as any).status = 400; // Set a status code for the error
+      throw roleError; // Throw the error to be handled by the caller
     }
 
+    // Extract the role name from the provided data object
+    const roleName = Object.values(data)[0];
+
+    // Check if the provided role name matches the existing role's name
+    if (role.name === roleName) {
+      // If the role name matches, throw an error indicating the role already exists
+      const roleNameError = new Error(" این نقش در سیستم وجود دارد"); // Error message in Persian
+      (roleNameError as any).status = 400; // Set a status code for the error
+      throw roleNameError; // Throw the error to be handled by the caller
+    }
+
+    // Validate the data using the 'assignRole' validation schema
     const { error } = assignRole.validate(data);
+
+    // If validation fails, throw an error with the validation details
     if (error) {
       const errors = new Error(error.details[0].message);
-      (errors as any).status = 400;
-      throw error;
+      (errors as any).status = 400; // Set a status code for the error
+      throw error; // Throw the error to be handled by the caller
     }
   }
+
   async edit(data: object, roleId: string) {
-    const role = this.roleRepository.update(data, roleId);
+    return this.roleRepository.update(data, roleId);
   }
 
   async validateAssignRole(data: any) {

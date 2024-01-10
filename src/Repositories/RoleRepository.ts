@@ -1,5 +1,6 @@
 import { RoleInterface } from "../interface/RoleInterface"; // Importing the RoleInterface
 import { Role } from "../Models/Role"; // Importing the Role model
+import {paginate} from "../utils/paginate"; // Importing the
 
 export class RoleRepository implements RoleInterface {
   // Implementing the findByName method defined in RoleInterface
@@ -36,11 +37,6 @@ export class RoleRepository implements RoleInterface {
   
   async list(data: any, reqData: any) {
     try {
-      // Pagination setup
-      const page = reqData.page || 2; // Default page to 2 if not provided
-      const pageSize = 2; // Number of items per page
-      const startIndex = (page - 1) * pageSize; // Calculation to determine the start index for pagination
-  
       // Fetch total count of documents in the Role collection
       const totalCount = await Role.countDocuments({});
   
@@ -50,26 +46,24 @@ export class RoleRepository implements RoleInterface {
         query = { 'name': { $regex: data.name, $options: 'i' } };
       }
   
+     const paginateData= paginate(reqData,totalCount);
       // Fetch paginated items based on the query, skipping items based on startIndex, limiting by pageSize, and sorting by _id in descending order
       const paginatedItems = await Role.find(query)
-        .skip(startIndex)
-        .limit(pageSize)
+        .skip(paginateData['startIndex'])
+        .limit(paginateData['pageSize'])
         .sort({ _id: -1 })
         .exec();
   
-      // Calculate total number of pages for pagination
-      const totalPages = Math.ceil(totalCount / pageSize);
-  
+      // Calculate total number of pages for pagination  
       // Prepare response object containing pagination information and fetched data
       const response = {
-        page: page,
-        total_pages: totalPages,
-        data: paginatedItems,
+        page:paginateData['page'],
+        total_pages: paginateData['totalPages'],
+        data:paginatedItems,
       };
       return response; // Return the response object
     } catch (error) {
       console.log(error); // Log any errors that occur during the process
     }
   }
-  
 }

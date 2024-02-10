@@ -22,5 +22,19 @@ export class PostRepository implements PostInterface {
         await post.populate('user', '_id name email');
         return post;
     }
+    async update(data:any, postId:string){
+        console.log(postId);
+
+      const post=  await Post.findOneAndUpdate(
+        {_id:postId},
+        data,
+        { new: true }
+      );
+      return post;
+    }
+    
+    async findById(postId:string){
+        return await Post.findById(postId);
+    }
     
 }

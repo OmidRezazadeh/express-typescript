@@ -28,8 +28,10 @@ export class UploadService {
 
                 // Create a new file name using randomBytes
                 const nawImageName = crypto.randomBytes(10).toString('hex');
-                const fileName = `${nawImageName}_${req.file.originalname}`;
-
+                const mimeType = req.file.originalname.split(".").pop();
+                const fileName = `${nawImageName}.${mimeType}`;
+                
+                
                 // Process the image file with Sharp
                 await sharp(req.file.buffer)
                     // Convert the image to jpeg with 60% quality

@@ -4,7 +4,7 @@ import { checkImageValidity } from "../utils/checkImageValidity"; // Importing i
 import { tempImage, destinationFolderPost } from "../configs/config"; // Importing folder paths
 import fs from "fs"; // File system module
 import path from "path"; // Path module
-import { ObjectId } from "mongoose";
+const mongoose = require("mongoose");
 
 export class PostService {
   private postRepository: PostRepository;
@@ -17,7 +17,7 @@ export class PostService {
   async movePostImage(imageName: string) {
     const tempImagePath = path.join(tempImage, imageName); // Path to temporary image
     const destinationFolderPath = path.join(destinationFolderPost, imageName); // Destination path for the image
-  
+
     if (fs.existsSync(tempImagePath)) {
       // Read the image file from the temporary location
       fs.readFile(tempImagePath, (err, data) => {
@@ -73,22 +73,21 @@ export class PostService {
     // Return the created post
     return post;
   }
-  
-  async updateValidate(data:any,postId:string, userId:string) {
-    const post=await this.postRepository.findById(postId);
 
-    if(!post){
-      const errorPost = new Error('پستی با این ایدی یافت نشده ');
+  async updateValidate(data: any, postId: string, userId: string) {
+    const post = await this.postRepository.findById(postId);
+
+    if (!post) {
+      const errorPost = new Error("پستی با این ایدی یافت نشده ");
       (errorPost as any).status = 400;
       throw errorPost;
     }
 
-   if(post.user.toString() !== userId){
-    const errorPost = new Error('شما نمی توانید این پست را اپدین  کنید ');
-    (errorPost as any).status = 400;
-    throw errorPost;
-   }
-
+    if (post.user.toString() !== userId) {
+      const errorPost = new Error("شما نمی توانید این پست را اپدین  کنید ");
+      (errorPost as any).status = 400;
+      throw errorPost;
+    }
 
     const { error } = storeValidate.validate(data); // Validating the incoming data
     if (error) {
@@ -97,20 +96,42 @@ export class PostService {
       (errors as any).status = 400;
       throw errors;
     }
-
-
-
-    
   }
-    // Method to create a new post
-    async update(data: any, postId: string) {
-      if (data.image) {
-        this.movePostImage(data.image); // Move the image if it exists in the data
-      }
-      const post = await this.postRepository.update(data, postId); // Create a post using the repository
-      // Return the created post
-      return post;
+  // Method to create a new post
+  async update(data: any, postId: string) {
+    if (data.image) {
+      this.movePostImage(data.image); // Move the image if it exists in the data
+    }
+    const post = await this.postRepository.update(data, postId); // Create a post using the repository
+    // Return the created post
+    return post;
+  }
+
+  async deleteValidate(postId: string, userId: string) {
+    if (!mongoose.Types.ObjectId.isValid(postId)) {
+      const isValidPostIderror = new Error(" شناسه ایدی صحیح نیست ");
+      (isValidPostIderror as any).status = 400;
+      throw isValidPostIderror;
     }
 
-
+    const post = await this.postRepository.findById(postId);
+    if (post.deletedAt !== null) {
+      const deletepostError = new Error("این پست قبلا حذف شده ");
+      (deletepostError as any).status = 400;
+      throw deletepostError;
+    }
+    if (!post) {
+      const existsPost = new Error("شما نمی توانید این پست را حذف کنید ");
+      (existsPost as any).status = 400;
+      throw existsPost;
+    }
+    if (post.user.toString() !== userId) {
+      const errorPost = new Error("شما نمی توانید این پست را حذف کنید ");
+      (errorPost as any).status = 400;
+      throw errorPost;
+    }
+  }
+  async delete(postId: string) {
+    await this.postRepository.delete(postId);
+  }
 }

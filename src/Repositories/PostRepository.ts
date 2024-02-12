@@ -23,22 +23,31 @@ export class PostRepository implements PostInterface {
     return post;
   }
   async update(data: any, postId: string) {
+    // Log the postId for debugging purposes
     console.log(postId);
 
+    // Find and update the post using findOneAndUpdate, returning the updated post
     const post = await Post.findOneAndUpdate({ _id: postId }, data, {
-      new: true,
+      new: true, // Return the modified document rather than the original
     });
+    
+    // Return the updated post
     return post;
   }
+  
+// Async method to find a post by its ID
+async findById(postId: string) {
+  // Use findById to retrieve the post with the specified ID
+  return await Post.findById(postId);
+}
 
-  async findById(postId: string) {
-    return await Post.findById(postId);
-  }
-  async delete(postId: string) {
-    await Post.findByIdAndUpdate(
-      { _id: postId },
-      { deletedAt: new Date() },
-      { new: true }
-    );
-  }
+//Async method to "soft delete" a post by updating its deletedAt field
+async delete(postId: string) {
+  // Find and update the post by setting its deletedAt field to the current date
+  await Post.findByIdAndUpdate(
+    { _id: postId },
+    { deletedAt: new Date() },
+    { new: true } // Return the modified document rather than the original
+  );
+}
 }

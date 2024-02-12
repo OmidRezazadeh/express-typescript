@@ -1,4 +1,4 @@
-import { Request, Response, NextFunction } from "express"; // Importing Express types
+import { Request, Response, NextFunction, response } from "express"; // Importing Express types
 import { PostService } from "../../Services/PostService"; // Importing PostService
 import { getDecodedToken } from "../../utils/token"; // Importing token decoding function
 import { PostRepository } from "../../Repositories/PostRepository"; // Importing PostRepository
@@ -70,20 +70,34 @@ class postController {
     }
   }
 
-  async delete(req: Request, res: Response, next: NextFunction) {
-    const postId = req.params.id;
-    const token = getDecodedToken(req.get("Authorization"));
-    const userId = token.user.user_id;
-    try {
-      await this.postService.deleteValidate(postId, userId);
-      await this.postService.delete(postId);
-      res.status(200).json({"message":"پست با موفقیت  حذف شد"})
+ // Async function to handle the deletion of a post
+ async delete(req: Request, res: Response, next: NextFunction) {
+  // Extract post ID from request parameters
+  const postId = req.params.id;
 
+  // Get the user ID from the decoded token in the request header
+  const token = getDecodedToken(req.get("Authorization"));
+  const userId = token.user.user_id;
 
-    } catch (error) {
-      next(error);
-    }
+  try {
+    // Validate if the user has the authority to delete the post
+    await this.postService.deleteValidate(postId, userId);
+
+    // If validation is successful, proceed with the deletion
+    await this.postService.delete(postId);
+
+    // Respond with a success message
+    res.status(200).json({"message": "پست با موفقیت  حذف شد"});
+  } catch (error) {
+    // Handle errors by passing them to the Express error handling middleware
+    next(error);
   }
+}
+
+  async list(req: Request, res: Response, next: NextFunction){
+  
+  }
+  
 }
 
 // Creating instances of PostRepository and PostService

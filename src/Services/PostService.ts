@@ -108,30 +108,41 @@ export class PostService {
   }
 
   async deleteValidate(postId: string, userId: string) {
+    // Check if the provided post ID is a valid MongoDB ObjectId
     if (!mongoose.Types.ObjectId.isValid(postId)) {
-      const isValidPostIderror = new Error(" شناسه ایدی صحیح نیست ");
-      (isValidPostIderror as any).status = 400;
-      throw isValidPostIderror;
+      // If not valid, create an error with a 400 status code
+      const isValidPostIdError = new Error("شناسه ایدی صحیح نیست ");
+      (isValidPostIdError as any).status = 400;
+      throw isValidPostIdError;
     }
 
+    // Find the post by its ID using the postRepository (replace with your actual repository)
     const post = await this.postRepository.findById(postId);
+
+    // Check if the post has already been deleted
     if (post.deletedAt !== null) {
-      const deletepostError = new Error("این پست قبلا حذف شده ");
-      (deletepostError as any).status = 400;
-      throw deletepostError;
+      const deletePostError = new Error("این پست قبلا حذف شده ");
+      (deletePostError as any).status = 400;
+      throw deletePostError;
     }
+
+    // Check if the post exists
     if (!post) {
-      const existsPost = new Error("شما نمی توانید این پست را حذف کنید ");
-      (existsPost as any).status = 400;
-      throw existsPost;
+      const existsPostError = new Error("شما نمی توانید این پست را حذف کنید ");
+      (existsPostError as any).status = 400;
+      throw existsPostError;
     }
+
+    // Check if the user attempting to delete the post is the owner of the post
     if (post.user.toString() !== userId) {
       const errorPost = new Error("شما نمی توانید این پست را حذف کنید ");
       (errorPost as any).status = 400;
       throw errorPost;
     }
   }
-  async delete(postId: string) {
-    await this.postRepository.delete(postId);
-  }
+// Async method to delete a post by its ID
+async delete(postId: string) {
+  // Call the delete method on the postRepository to remove the post from the database
+  await this.postRepository.delete(postId);
+}
 }

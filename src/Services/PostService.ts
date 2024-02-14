@@ -13,6 +13,18 @@ export class PostService {
     this.postRepository = postRepository;
   }
 
+// Retrieves a post by its ID for a specific user
+async retrievePostByIdForUser(postId: string, userId: string) {
+  // Delegates the task to the post repository and returns the result
+  return await this.postRepository.retrievePostByIdForUser(postId, userId);
+}
+
+// Retrieves a list of posts based on provided data and request parameters
+async list(data: any, reqData: any) {
+  // Delegates the task to the post repository and returns the result
+  return await this.postRepository.list(data, reqData);
+}
+
   // Method to move user image from temporary location to a destination folder
   async movePostImage(imageName: string) {
     const tempImagePath = path.join(tempImage, imageName); // Path to temporary image
@@ -145,4 +157,6 @@ async delete(postId: string) {
   // Call the delete method on the postRepository to remove the post from the database
   await this.postRepository.delete(postId);
 }
+
+
 }

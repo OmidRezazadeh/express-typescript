@@ -70,34 +70,69 @@ class postController {
     }
   }
 
- // Async function to handle the deletion of a post
- async delete(req: Request, res: Response, next: NextFunction) {
-  // Extract post ID from request parameters
-  const postId = req.params.id;
+  // Async function to handle the deletion of a post
+  async delete(req: Request, res: Response, next: NextFunction) {
+    // Extract post ID from request parameters
+    const postId = req.params.id;
 
-  // Get the user ID from the decoded token in the request header
-  const token = getDecodedToken(req.get("Authorization"));
-  const userId = token.user.user_id;
+    // Get the user ID from the decoded token in the request header
+    const token = getDecodedToken(req.get("Authorization"));
+    const userId = token.user.user_id;
 
-  try {
-    // Validate if the user has the authority to delete the post
-    await this.postService.deleteValidate(postId, userId);
+    try {
+      // Validate if the user has the authority to delete the post
+      await this.postService.deleteValidate(postId, userId);
 
-    // If validation is successful, proceed with the deletion
-    await this.postService.delete(postId);
+      // If validation is successful, proceed with the deletion
+      await this.postService.delete(postId);
 
-    // Respond with a success message
-    res.status(200).json({"message": "پست با موفقیت  حذف شد"});
-  } catch (error) {
-    // Handle errors by passing them to the Express error handling middleware
-    next(error);
+      // Respond with a success message
+      res.status(200).json({ message: "پست با موفقیت  حذف شد" });
+    } catch (error) {
+      // Handle errors by passing them to the Express error handling middleware
+      next(error);
+    }
   }
-}
 
-  async list(req: Request, res: Response, next: NextFunction){
-  
+  // Handles the listing of posts based on request parameters
+  async list(req: Request, res: Response, next: NextFunction) {
+    // Extract post ID from request parameters
+    const postId = req.params.id;
+    // Decode the token to get the user ID from the authorization header
+    const token = getDecodedToken(req.get("Authorization"));
+    const userId = token.user.user_id;
+
+    try {
+      // Check if a specific post ID is provided
+      if (postId) {
+        // Retrieve a post by its ID for the specific user
+        const post = await this.postService.retrievePostByIdForUser(
+          postId,
+          userId
+        );
+
+        // Check if the post is found and return the appropriate response
+        if (post) {
+          return res.status(200).json({ post });
+        } else {
+          return res.status(404).json({ message: "پستی یافت نشده" });
+        }
+      }
+
+      // If no specific post ID is provided, proceed to list posts
+      const data = req.body;
+      const reqData = req.query;
+
+      // Retrieve a list of posts based on provided data and request parameters
+      const posts = await this.postService.list(data, reqData);
+
+      // Return the list of posts in the response
+      return res.status(200).json({ posts });
+    } catch (error) {
+      // Handle any errors that occur during the execution and pass them to the next middleware
+      next(error);
+    }
   }
-  
 }
 
 // Creating instances of PostRepository and PostService

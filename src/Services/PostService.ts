@@ -86,29 +86,39 @@ async list(data: any, reqData: any) {
     return post;
   }
 
-  async updateValidate(data: any, postId: string, userId: string) {
-    const post = await this.postRepository.findById(postId);
+// Validates data before updating a post
+async updateValidate(data: any, postId: string, userId: string) {
+  // Retrieve the post by its ID
+  const post = await this.postRepository.findById(postId);
 
-    if (!post) {
-      const errorPost = new Error("پستی با این ایدی یافت نشده ");
-      (errorPost as any).status = 400;
-      throw errorPost;
-    }
-
-    if (post.user.toString() !== userId) {
-      const errorPost = new Error("شما نمی توانید این پست را اپدین  کنید ");
-      (errorPost as any).status = 400;
-      throw errorPost;
-    }
-
-    const { error } = storeValidate.validate(data); // Validating the incoming data
-    if (error) {
-      // Throw an error if validation fails
-      const errors = new Error(error.details[0].message);
-      (errors as any).status = 400;
-      throw errors;
-    }
+  // Check if the post with the given ID exists
+  if (!post) {
+    // Throw an error with a 400 status code if the post is not found
+    const errorPost = new Error("پستی با این ایدی یافت نشده ");
+    (errorPost as any).status = 400;
+    throw errorPost;
   }
+
+  // Check if the user making the update is the owner of the post
+  if (post.user.toString() !== userId) {
+    // Throw an error with a 400 status code if the user is not the owner
+    const errorPost = new Error("شما نمی توانید این پست را اپدین کنید ");
+    (errorPost as any).status = 400;
+    throw errorPost;
+  }
+
+  // Validate the incoming data using Joi schema
+  const { error } = storeValidate.validate(data);
+
+  // Check if validation fails
+  if (error) {
+    // Throw an error with a 400 status code if validation fails
+    const errors = new Error(error.details[0].message);
+    (errors as any).status = 400;
+    throw errors;
+  }
+}
+
   // Method to create a new post
   async update(data: any, postId: string) {
     if (data.image) {

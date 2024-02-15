@@ -6,6 +6,7 @@ export interface UserInterface {
   findById(userId: any): Promise<any>;
   findByEmail(email: string): Promise<IUsers | null>;
   findUserInformationByEmail(email: string): Promise<IUsers | null>;
+  list(data:any,reqData:any) : Promise<any>;
 
 }
 

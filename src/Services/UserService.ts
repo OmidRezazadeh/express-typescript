@@ -1,20 +1,21 @@
-import { UserRepository } from '../Repositories/UserRepository';
-import { userValidate, validationLogin, validationUpdatePassword } from "../Validations/UserValidate";
-import { tempImage, mimeTypeArray } from '../configs/config';
-import bcrypt from 'bcrypt';
-import jwt from 'jsonwebtoken';
-import path from 'path';
-import fs from 'fs';
+import { UserRepository } from "../Repositories/UserRepository";
+import {
+  userValidate,
+  validationLogin,
+  validationUpdatePassword,
+} from "../Validations/UserValidate";
+import { tempImage, mimeTypeArray } from "../configs/config";
+import bcrypt from "bcrypt";
+import jwt from "jsonwebtoken";
+import path from "path";
+import fs from "fs";
 
 // Service handling user-related operations
 export class UserService {
-
   private userRepository: UserRepository;
 
   // Constructor to initialize the UserRepository
-  constructor(
-    userRepository: UserRepository
-  ) {
+  constructor(userRepository: UserRepository) {
     this.userRepository = userRepository;
   }
 
@@ -23,7 +24,11 @@ export class UserService {
     try {
       // Hashing the password before storing it
       const password = await bcrypt.hash(data.password, 10);
-      const userData = { name: data.name, email: data.email, password: password };
+      const userData = {
+        name: data.name,
+        email: data.email,
+        password: password,
+      };
       // Creating a new user and returning the result
       const newUser = await this.userRepository.create(userData, session);
 
@@ -31,20 +36,17 @@ export class UserService {
     } catch (error) {
       console.log(error);
       throw new Error(`Error creating user: ${error.message}`);
-
     }
   }
 
   // Method to validate user data (e.g., during registration)
   async validation(data: any): Promise<any> {
-
     let email = data.email;
     const userExists = await this.userRepository.findByEmail(email);
 
-
     // Checking if the email already exists in the database
     if (userExists) {
-      const errorEmail = new Error('این ایمیل قبلا استفاده شده');
+      const errorEmail = new Error("این ایمیل قبلا استفاده شده");
       (errorEmail as any).status = 400;
       throw errorEmail;
     }
@@ -63,21 +65,21 @@ export class UserService {
       const filePath = tempImage + data.image;
 
       const fileExtension = path.extname(filePath).toLowerCase(); // Extracting the file extension and converting it to lowercase
-      if (!mimeTypeArray.includes(fileExtension)) { // Checking if the file extension is not in the allowed mime types
+      if (!mimeTypeArray.includes(fileExtension)) {
+        // Checking if the file extension is not in the allowed mime types
         // If the file extension is invalid, throwing an error indicating an invalid image extension
         const errorMimeTypeArray = new Error("پسوند عکس معتبر نیست ");
         (errorMimeTypeArray as any).status = 400; // Setting a status code for the error (assuming it's for HTTP status)
         throw errorMimeTypeArray; // Throwing the error to handle it elsewhere
       }
-      if (!fs.existsSync(filePath)) { // Checking if the file doesn't exist in the specified path
+      if (!fs.existsSync(filePath)) {
+        // Checking if the file doesn't exist in the specified path
         // If the file doesn't exist, throwing an error indicating that the image file wasn't found
         const errorExists = new Error("عکس مورد نظر یافت نشد");
         (errorExists as any).status = 400; // Setting a status code for the error (assuming it's for HTTP status)
         throw errorExists; // Throwing the error to handle it elsewhere
       }
     }
-
-
   }
 
   // Method to validate user login credentials
@@ -94,7 +96,7 @@ export class UserService {
 
     // Checking if the user exists during login
     if (!userExists) {
-      const errorEmail = new Error('کاربری بااین ایمیل  یافت نشد');
+      const errorEmail = new Error("کاربری بااین ایمیل  یافت نشد");
       (errorEmail as any).status = 400;
       throw errorEmail;
     }
@@ -107,7 +109,11 @@ export class UserService {
     // Comparing the provided password with the stored hashed password
     if (await bcrypt.compare(data.password, user.password)) {
       // Generating a JWT token upon successful authentication
-      const token = jwt.sign({ user: { user_id: user._id, email: user.email, name: user.name } }, process.env.JWT_SECRET, { expiresIn: "2h" });
+      const token = jwt.sign(
+        { user: { user_id: user._id, email: user.email, name: user.name } },
+        process.env.JWT_SECRET,
+        { expiresIn: "2h" }
+      );
       return token;
     } else {
       const error = new Error("نام کاربری و رمز عبور اشتباه است ");
@@ -116,11 +122,9 @@ export class UserService {
     }
   }
   async updatePassword(data: any) {
-
-
     const user = await this.userRepository.findByEmail(data.email);
     if (!user) {
-      const errorUser = new Error('کاربری بااین ایمیل یافت نشد');
+      const errorUser = new Error("کاربری بااین ایمیل یافت نشد");
       (errorUser as any).status = 400;
       throw errorUser;
     }
@@ -135,11 +139,9 @@ export class UserService {
     await this.userRepository.updatePassword(passwordHash, data.email);
   }
 
-
   async updateUser(userInformationId: any, user: any, session: any) {
     await this.userRepository.updateUser(userInformationId, user, session);
   }
-
 
   async findById(userId: string) {
     // Find a user in the repository by ID
@@ -147,11 +149,15 @@ export class UserService {
 
     // If the user is not found, throw an error
     if (!user) {
-      const errorUser = new Error('کاربری بااین ایدی یافت نشد');
+      const errorUser = new Error("کاربری بااین ایدی یافت نشد");
       (errorUser as any).status = 400;
       throw errorUser;
     }
     // Return the found user
     return user;
+  }
+
+  async list(data: any, reqData: any) {
+    return await this.userRepository.list(data, reqData);
   }
 }
